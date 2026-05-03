@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="theme-color" content="#0B0F14"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="description" content="Stick Rush — The ultimate stickman party game for kids in Ghana! Play mini-games, answer questions and earn your YIN code."/>
+<title>Stick Rush 🏃</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- Audio toggle (always visible) -->
+<button id="audio-toggle" onclick="Audio.toggle(); this.textContent = Audio.enabled ? '🔊' : '🔇';" title="Toggle Sound">🔊</button>
+
+<!-- ══════════════════ SPLASH ══════════════════════ -->
+<div id="screen-splash" class="screen">
+  <canvas id="splash-canvas"></canvas>
+  <div class="splash-logo">
+    <h1>STICK RUSH</h1>
+    <p>GHANA'S PARTY GAME</p>
+    <small>BY MANNY HARRY GAMES</small>
+    <div class="splash-bars">
+      <div class="splash-bar"></div>
+      <div class="splash-bar"></div>
+      <div class="splash-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ MAIN MENU ══════════════════ -->
+<div id="screen-menu" class="screen">
+  <div class="menu-header">
+    <h1>STICK RUSH</h1>
+    <p>🇬🇭 GHANA'S ULTIMATE PARTY GAME</p>
+    <div class="menu-score" id="menu-score">Total Score: ⭐ 0</div>
+  </div>
+  <div class="menu-canvas-wrap">
+    <canvas id="menu-canvas"></canvas>
+  </div>
+  <div class="menu-buttons">
+    <button class="btn btn-gold btn-full" onclick="goSetup()">
+      🏃 PLAY STICK RUSH
+    </button>
+    <button class="btn btn-blue btn-full" onclick="showLeaderboard()">
+      🏆 LEADERBOARD
+    </button>
+    <button class="btn btn-dark btn-full" onclick="showAbout()">
+      ℹ️ HOW TO PLAY
+    </button>
+    <div style="text-align:center;color:#444;font-size:11px;padding-top:8px;">
+      Round 1 FREE • Round 2+ = GHS 5 each<br/>
+      Ages 8–16 • Educational mini-games
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ SETUP ═══════════════════════ -->
+<div id="screen-setup" class="screen">
+  <div class="setup-header">
+    <button class="back-btn" onclick="Audio.playClick();goMenu();">← Back</button>
+    <h2>Your Character</h2>
+  </div>
+  <div class="setup-body">
+
+    <!-- Name & Age -->
+    <div class="setup-section">
+      <h3>👤 Player Info</h3>
+      <div class="field-row">
+        <div class="field">
+          <label>Display Name</label>
+          <input type="text" id="player-name" maxlength="14" placeholder="Enter your name" oninput="updateSetupPreview()"/>
+        </div>
+        <div class="field">
+          <label>Age</label>
+          <select id="player-age" onchange="updateSetupPreview()">
+            <option value="8">8</option><option value="9">9</option>
+            <option value="10">10</option><option value="11">11</option>
+            <option value="12" selected>12</option><option value="13">13</option>
+            <option value="14">14</option><option value="15">15</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;">Age determines your question difficulty tier.</p>
+    </div>
+
+    <!-- Costume Preview -->
+    <div class="setup-section">
+      <h3>🎨 Your Stickman</h3>
+      <div class="preview-wrap">
+        <canvas id="preview-canvas" width="90" height="120"></canvas>
+        <div class="preview-info">
+          <p>Choose your costume below. Unlock more by playing rounds and answering questions correctly!</p>
+          <p style="margin-top:6px;color:var(--gold);font-size:12px;">⚪ Common → 🔵 Rare → 💜 Epic → 🟡 Legendary → 🔴 Mythic</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Costume Grid -->
+    <div class="setup-section">
+      <h3>👕 Choose Costume</h3>
+      <div id="costume-grid"></div>
+    </div>
+
+    <!-- Start Button -->
+    <button class="btn btn-gold btn-full" style="font-size:18px;padding:18px;" onclick="saveSetupAndPlay()">
+      🏃 START ROUND 1 — FREE!
+    </button>
+    <div style="text-align:center;color:var(--muted);font-size:12px;padding-bottom:20px;">
+      Round 1 is completely free. No payment needed!
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ ROUND INTRO ════════════════ -->
+<div id="screen-round-intro" class="screen" style="align-items:center;justify-content:center;text-align:center;padding:32px 24px;">
+  <div>
+    <div id="ri-free-badge" class="ri-badge-free">🆓 FREE ROUND</div>
+    <div id="ri-round-num" style="font-size:64px;font-weight:900;color:var(--gold);">ROUND 1</div>
+    <div id="ri-tier" style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;"></div>
+
+    <div class="ri-games-card" style="margin:0 auto 20px;max-width:340px;">
+      <h4>Mini-Games This Round</h4>
+      <ul id="ri-games-list"></ul>
+    </div>
+
+    <div class="ri-games-card" style="margin:0 auto 24px;max-width:340px;background:rgba(241,196,15,0.06);border-color:rgba(241,196,15,0.2);">
+      <h4 style="color:var(--gold);">📚 After Mini-Games</h4>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;">
+        Answer 3 educational questions (Math + English).<br/>
+        Correct answers = <strong style="color:var(--gold);">bonus points!</strong>
+      </p>
+    </div>
+
+    <button class="btn btn-gold" style="font-size:18px;padding:18px 36px;" onclick="Audio.playClick();startMiniGames();">
+      ⚡ LET'S GO!
+    </button>
+    <br/>
+    <button class="back-btn" style="margin-top:14px;justify-content:center;" onclick="goMenu()">← Back to Menu</button>
+  </div>
+</div>
+
+<!-- ══════════════════ GAME CANVAS ════════════════ -->
+<div id="screen-game" class="screen">
+  <div class="game-hud">
+    <span id="game-label">🏃 Sprint Dash</span>
+    <span id="game-num">Game 1 of 3</span>
+  </div>
+  <canvas id="game-canvas" style="width:100%;flex:1;display:block;touch-action:none;"></canvas>
+</div>
+
+<!-- ══════════════════ MG RESULT ═════════════════ -->
+<div id="screen-mg-result" class="screen" style="align-items:center;justify-content:center;padding:32px 24px;">
+  <div class="mgr-card">
+    <div id="mgr-title" style="font-size:32px;font-weight:900;margin-bottom:6px;">🏆 You Won!</div>
+    <div id="mgr-game" style="color:var(--muted);font-size:14px;margin-bottom:14px;"></div>
+    <div id="mgr-score" style="font-size:44px;font-weight:900;color:var(--gold);"></div>
+    <div id="mgr-total" style="color:rgba(255,255,255,0.4);font-size:13px;margin:8px 0 22px;"></div>
+    <button id="mgr-next-btn" class="btn btn-gold btn-full" style="font-size:16px;">Next Game →</button>
+  </div>
+</div>
+
+<!-- ══════════════════ Q&A ════════════════════════ -->
+<div id="screen-qa" class="screen">
+  <div class="qa-header">
+    <h2>📚 Brain Challenge!</h2>
+    <div id="qa-progress">Question 1 of 3</div>
+    <div id="qa-timer-bar-bg"><div id="qa-timer-bar"></div></div>
+    <div id="qa-timer">⏱ 15s</div>
+  </div>
+
+  <div class="qa-card">
+    <div id="qa-subject" class="qa-subject-badge" style="background:#2980B9;">Math</div>
+    <div id="qa-question" style="font-size:18px;font-weight:700;line-height:1.45;margin-bottom:8px;"></div>
+    <div id="qa-pts" style="color:var(--muted);font-size:12px;"></div>
+  </div>
+
+  <div id="qa-options" class="qa-options"></div>
+</div>
+
+<!-- ══════════════════ RESULTS ════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-header">
+    <h1>🎉 Round Complete!</h1>
+    <div id="res-round" style="color:rgba(255,255,255,0.5);font-size:14px;margin-top:4px;"></div>
+  </div>
+
+  <div class="results-card">
+    <p id="res-mg-score"></p>
+    <p id="res-qa-score"></p>
+    <p id="res-total"></p>
+  </div>
+
+  <div class="results-card">
+    <p style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🎁 Unlocks</p>
+    <div id="res-costumes"></div>
+  </div>
+
+  <div class="results-actions">
+    <button id="res-next-btn" class="btn btn-gold btn-full" style="font-size:16px;padding:16px;"></button>
+    <button class="btn btn-dark" onclick="Audio.playClick();showLeaderboard();">🏆 Leaderboard</button>
+    <button class="btn btn-dark" onclick="Audio.playClick();goMenu();">🏠 Menu</button>
+  </div>
+</div>
+
+<!-- ══════════════════ PAYMENT ════════════════════ -->
+<div id="screen-payment" class="screen">
+  <div style="padding:0 22px;max-width:480px;width:100%;margin:0 auto;">
+    <div class="pay-header" style="padding-top:28px;">
+      <button class="back-btn" onclick="goMenu()" style="margin-bottom:10px;">← Back</button>
+      <h2>🔓 Unlock Round <span id="pay-round">2</span></h2>
+      <p>Player: <strong id="pay-player"></strong></p>
+    </div>
+
+    <div class="pay-price">GHS 5</div>
+    <div class="pay-price-sub">≈ $0.40 USD · Less than one pure water sachet a day!</div>
+
+    <div id="pay-preview"></div>
+
+    <div class="pay-methods">
+      <button class="pay-btn pay-btn-mtn" onclick="handlePayment('mtn')">
+        <span class="pay-logo">📱</span>
+        <div class="pay-logo-text">
+          <span>MTN Mobile Money</span>
+          <span>Dial *170# to pay</span>
+        </div>
+      </button>
+      <button class="pay-btn pay-btn-voda" onclick="handlePayment('vodafone')">
+        <span class="pay-logo">📲</span>
+        <div class="pay-logo-text">
+          <span>Vodafone Cash</span>
+          <span>Dial *110# to pay</span>
+        </div>
+      </button>
+      <button class="pay-btn pay-btn-airtel" onclick="handlePayment('airtel')">
+        <span class="pay-logo">💳</span>
+        <div class="pay-logo-text">
+          <span>AirtelTigo Money</span>
+          <span>Dial *500# to pay</span>
+        </div>
+      </button>
+    </div>
+
+    <div class="pay-bundles">
+      <h4>💰 Bundle Options</h4>
+      <div class="bundle-item">
+        <span>Single Round Unlock</span>
+        <span class="bundle-price">GHS 5</span>
+      </div>
+      <div class="bundle-item">
+        <span>3-Round Bundle</span>
+        <span class="bundle-price">GHS 12 <small style="color:var(--green);font-size:10px;">Save 20%</small></span>
+      </div>
+      <div class="bundle-item">
+        <span>Full Game (All Rounds)</span>
+        <span class="bundle-price">GHS 25 <small style="color:var(--green);font-size:10px;">Best Value</small></span>
+      </div>
+      <div class="bundle-item">
+        <span>Family Pack (5 players)</span>
+        <span class="bundle-price">GHS 40 <small style="color:var(--green);font-size:10px;">8 per player</small></span>
+      </div>
+    </div>
+
+    <button class="pay-btn pay-btn-demo btn-full" id="pay-demo-btn" style="margin-top:4px;border-radius:14px;">
+      🎮 Demo: Unlock for Free (Testing Only)
+    </button>
+
+    <div id="pay-success"></div>
+    <div style="height:32px;"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ LEADERBOARD ═══════════════ -->
+<div id="screen-leaderboard" class="screen">
+  <div class="lb-header">
+    <button class="back-btn" onclick="Audio.playClick();goMenu();">← Back</button>
+    <h2>🏆 Leaderboard</h2>
+  </div>
+  <div class="lb-body">
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Name</th><th>Score</th><th>Details</th>
+        </tr>
+      </thead>
+      <tbody id="lb-body"></tbody>
+    </table>
+    <div style="margin-top:20px;text-align:center;">
+      <button class="btn btn-red" onclick="if(confirm('Clear all scores?')){Store.clear();showLeaderboard();}">🗑 Clear My Scores</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ HOW TO PLAY ═══════════════ -->
+<div id="screen-about" class="screen" style="padding:24px 20px;overflow-y:auto;">
+  <div style="max-width:500px;margin:0 auto;">
+    <button class="back-btn" onclick="goMenu()" style="margin-bottom:20px;">← Back</button>
+    <h2 style="font-size:22px;font-weight:900;margin-bottom:18px;">How to Play Stick Rush</h2>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);">
+        <p style="font-weight:800;color:var(--gold);margin-bottom:6px;">🏃 Sprint Dash</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;">Tap or click as FAST as you can to make your stickman run. First to the finish line wins! Use Space or ArrowRight key on desktop.</p>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);">
+        <p style="font-weight:800;color:var(--gold);margin-bottom:6px;">🦘 Jump Fever</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;">Tap to jump over obstacles! Survive for 20 seconds. Collect coins for bonus points. Double-tap for a double jump! Speed increases over time.</p>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);">
+        <p style="font-weight:800;color:var(--gold);margin-bottom:6px;">🎯 Reflex Blaster</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;">Tap the glowing circles before they disappear! Build up combo streaks for mega bonus points. The faster you tap — the higher your score!</p>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid rgba(241,196,15,0.2);">
+        <p style="font-weight:800;color:var(--gold);margin-bottom:6px;">📚 Brain Challenge (Q&A)</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;">After the 3 mini-games, answer 3 questions — Math and English Grammar. You have 15 seconds per question. Correct answers give bonus points!</p>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);">
+        <p style="font-weight:800;color:var(--gold);margin-bottom:6px;">💰 Pricing</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;"><strong style="color:#2ECC71;">Round 1 is 100% FREE!</strong> Rounds 2 and beyond cost GHS 5 each. You can pay with MTN Mobile Money, Vodafone Cash, or AirtelTigo Money.</p>
+      </div>
+      <div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);">
+        <p style="font-weight:800;color:var(--gold);margin-bottom:6px;">👕 Costumes</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;">Unlock new costumes by scoring points, winning mini-games, answering questions correctly, and completing rounds. Costumes go: Common → Rare → Epic → Legendary → Mythic!</p>
+      </div>
+    </div>
+
+    <button class="btn btn-gold btn-full" style="margin-top:24px;font-size:16px;" onclick="goSetup()">
+      🏃 Start Playing Now!
+    </button>
+    <div style="height:32px;"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ SCRIPTS ════════════════════ -->
+<script src="js/questions.js"></script>
+<script src="js/costumes.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/games/sprint.js"></script>
+<script src="js/games/jump.js"></script>
+<script src="js/games/reflex.js"></script>
+<script src="js/game.js"></script>
+
+<script>
+// ── Extra helpers wired to HTML ──────────────────
+
+function showAbout() {
+  Audio.playClick();
+  showScreen('screen-about');
+}
+
+function handlePayment(provider) {
+  Audio.playClick();
+  const names = { mtn:'MTN Mobile Money', vodafone:'Vodafone Cash', airtel:'AirtelTigo Money' };
+  const codes  = { mtn:'*170#', vodafone:'*110#', airtel:'*500#' };
+  const el = document.getElementById('pay-success');
+  if (el) {
+    el.style.display = 'block';
+    el.innerHTML = `
+      <p style="color:var(--gold);font-weight:800;font-size:16px;">📱 ${names[provider]} Selected</p>
+      <p style="color:var(--muted);font-size:13px;margin-top:8px;line-height:1.6;">
+        Dial <strong style="color:#fff;">${codes[provider]}</strong> on your phone.<br/>
+        Send <strong style="color:var(--gold);">GHS 5</strong> to the Stick Rush game account.<br/>
+        Your round will unlock automatically within 60 seconds.
+      </p>
+      <p style="color:#888;font-size:11px;margin-top:10px;">
+        (In the live version, this would auto-detect your payment via API)
+      </p>
+    `;
+    el.scrollIntoView({ behavior:'smooth' });
+  }
+}
+
+// Draw animated stickmen on menu canvas
+(function menuCanvasLoop() {
+  const canvas = document.getElementById('menu-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let f = 0;
+  const costumes = ['default','firewarrior','ninjastrike','goldenchampion','shadowkick'];
+  const positions = [0.1, 0.3, 0.5, 0.7, 0.9];
+  function draw() {
+    const W = canvas.width  = canvas.offsetWidth  || 360;
+    const H = canvas.height = canvas.offsetHeight || 180;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#1E2A36'; ctx.fillRect(0,H-20,W,20);
+    ctx.fillStyle = '#F1C40F'; ctx.fillRect(0,H-20,W,2);
+    positions.forEach((p,i) => {
+      const x = (((p * W + f * (1 + i * 0.2)) % (W + 80)) - 40);
+      drawStickman(ctx, x, H-20, costumes[i], { scale:0.72, running:true, frame:f+i*12 });
+    });
+    f++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+</body>
+</html>
