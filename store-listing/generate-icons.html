@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Stick Rush Icon Generator</title>
+<style>
+  body { background: #111; color: #fff; font-family: sans-serif; padding: 20px; }
+  canvas { margin: 10px; border: 1px solid #333; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
+  button { background: #F1C40F; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-size: 14px; font-weight: bold; border-radius: 6px; margin: 6px; }
+  h3 { color: #F1C40F; }
+</style>
+</head>
+<body>
+<h2>🎮 Stick Rush — Icon Generator</h2>
+<p>Right-click each icon → "Save image as..." to download, or click the Download buttons.</p>
+
+<h3>App Icons</h3>
+<div class="row" id="icons-row"></div>
+<button onclick="downloadAll()">⬇ Download All Icons</button>
+
+<h3>Feature Graphic (1024×500) — Google Play</h3>
+<canvas id="feature" width="1024" height="500"></canvas>
+<br><button onclick="downloadFeature()">⬇ Download Feature Graphic</button>
+
+<script>
+const sizes = [
+  { size: 512, label: '512×512 (Play Store)' },
+  { size: 192, label: '192×192 (Android XXXHDPI)' },
+  { size: 144, label: '144×144 (Android XXHDPI)' },
+  { size: 96, label: '96×96 (Android XHDPI)' },
+  { size: 72, label: '72×72 (Android HDPI)' },
+  { size: 48, label: '48×48 (Android MDPI)' },
+  { size: 1024, label: '1024×1024 (App Store)' },
+  { size: 180, label: '180×180 (iOS @3x)' },
+  { size: 120, label: '120×120 (iOS @2x)' },
+  { size: 87, label: '87×87 (iOS Settings @3x)' },
+  { size: 60, label: '60×60 (iOS @1x)' },
+];
+
+function drawIcon(ctx, size) {
+  const W = size, H = size;
+  const cx = W / 2, cy = H / 2;
+  const r = Math.min(W, H) * 0.12;  // corner radius
+
+  // Background gradient
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#0B3D91');
+  bg.addColorStop(0.5, '#1A0533');
+  bg.addColorStop(1, '#0d0d0d');
+
+  // Rounded rect background
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(W - r, 0);
+  ctx.quadraticCurveTo(W, 0, W, r);
+  ctx.lineTo(W, H - r);
+  ctx.quadraticCurveTo(W, H, W - r, H);
+  ctx.lineTo(r, H);
+  ctx.quadraticCurveTo(0, H, 0, H - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fillStyle = bg;
+  ctx.fill();
+
+  // Ground line
+  const groundY = H * 0.82;
+  ctx.fillStyle = 'rgba(241,196,15,0.3)';
+  ctx.fillRect(0, groundY, W, H - groundY);
+  ctx.fillStyle = '#F1C40F';
+  ctx.fillRect(0, groundY, W, Math.max(2, H * 0.008));
+
+  // Draw stickman
+  const scale = size / 150;
+  const stickY = groundY;
+  const stickX = cx;
+
+  ctx.strokeStyle = '#F1C40F';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const lw = Math.max(1.5, scale * 2.5);
+  ctx.lineWidth = lw;
+
+  // Body proportions
+  const headR   = 11 * scale;
+  const bodyLen = 26 * scale;
+  const legLen  = 22 * scale;
+  const armLen  = 18 * scale;
+
+  const headY   = stickY - legLen - bodyLen - headR;
+  const neckY   = headY + headR;
+  const hipY    = neckY + bodyLen;
+
+  // Running pose
+  const frameOff = 0;
+  const legAngle = 0.45;
+  const armAngle = 0.4;
+
+  // Head (gold circle)
+  ctx.beginPath();
+  ctx.arc(stickX, headY, headR, 0, Math.PI * 2);
+  ctx.fillStyle = '#F1C40F';
+  ctx.fill();
+  ctx.strokeStyle = '#D4AC0D';
+  ctx.lineWidth = lw * 0.6;
+  ctx.stroke();
+
+  ctx.strokeStyle = '#F1C40F';
+  ctx.lineWidth = lw;
+
+  // Body
+  ctx.beginPath();
+  ctx.moveTo(stickX, neckY);
+  ctx.lineTo(stickX, hipY);
+  ctx.stroke();
+
+  // Arms (running)
+  ctx.beginPath();
+  ctx.moveTo(stickX, neckY + bodyLen * 0.3);
+  ctx.lineTo(stickX - Math.cos(armAngle) * armLen, neckY + bodyLen * 0.3 + Math.sin(armAngle) * armLen);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(stickX, neckY + bodyLen * 0.3);
+  ctx.lineTo(stickX + Math.cos(armAngle) * armLen, neckY + bodyLen * 0.3 - Math.sin(armAngle) * armLen);
+  ctx.stroke();
+
+  // Legs (running)
+  ctx.beginPath();
+  ctx.moveTo(stickX, hipY);
+  ctx.lineTo(stickX - Math.sin(legAngle) * legLen * 0.6, hipY + Math.cos(legAngle) * legLen * 0.6);
+  ctx.lineTo(stickX - Math.sin(legAngle) * legLen * 0.6 + legLen * 0.5, hipY + legLen);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(stickX, hipY);
+  ctx.lineTo(stickX + Math.sin(legAngle) * legLen * 0.6, hipY + Math.cos(legAngle) * legLen * 0.6);
+  ctx.lineTo(stickX + Math.sin(legAngle) * legLen * 0.6 - legLen * 0.3, hipY + legLen);
+  ctx.stroke();
+
+  // "SR" text bottom right
+  if (size >= 96) {
+    const fontSize = Math.max(8, size * 0.09);
+    ctx.fillStyle = 'rgba(241,196,15,0.6)';
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('SR', W - size * 0.06, H - size * 0.05);
+  }
+
+  // Speed lines
+  for (let i = 0; i < 3; i++) {
+    const lineY = stickY - legLen * (0.3 + i * 0.4);
+    const lineX = stickX - headR * 2 - i * scale * 4;
+    const lineW = (10 - i * 2) * scale;
+    ctx.strokeStyle = `rgba(241,196,15,${0.4 - i * 0.1})`;
+    ctx.lineWidth = Math.max(1, lw * 0.5);
+    ctx.beginPath();
+    ctx.moveTo(lineX, lineY);
+    ctx.lineTo(lineX - lineW, lineY);
+    ctx.stroke();
+  }
+}
+
+function drawFeatureGraphic() {
+  const canvas = document.getElementById('feature');
+  const ctx = canvas.getContext('2d');
+  const W = 1024, H = 500;
+
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#0B3D91');
+  bg.addColorStop(0.4, '#1A0533');
+  bg.addColorStop(1, '#0d0d0d');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  for (let i = 0; i < 60; i++) {
+    ctx.beginPath();
+    ctx.arc((i * 197 + 50) % W, (i * 83 + 20) % (H * 0.6), 0.5 + (i % 3) * 0.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Ground
+  ctx.fillStyle = '#1A252F';
+  ctx.fillRect(0, H - 80, W, 80);
+  ctx.fillStyle = '#F1C40F';
+  ctx.fillRect(0, H - 80, W, 4);
+
+  // 5 stickmen at bottom
+  const positions = [100, 230, 512, 800, 924];
+  const costumes = ['#E74C3C', '#3498DB', '#F1C40F', '#2ECC71', '#9B59B6'];
+  positions.forEach((x, i) => {
+    const scale = i === 2 ? 2.2 : 1.6; // Center one is bigger
+    const lw = scale * 2.5;
+    ctx.strokeStyle = costumes[i];
+    ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
+
+    const headR = 11 * scale;
+    const bodyLen = 26 * scale;
+    const legLen = 22 * scale;
+    const armLen = 18 * scale;
+    const stickY = H - 80;
+    const headY = stickY - legLen - bodyLen - headR;
+    const neckY = headY + headR;
+    const hipY = neckY + bodyLen;
+
+    // Head
+    ctx.beginPath();
+    ctx.arc(x, headY, headR, 0, Math.PI * 2);
+    ctx.fillStyle = costumes[i];
+    ctx.fill();
+
+    ctx.strokeStyle = costumes[i];
+
+    // Body
+    ctx.beginPath(); ctx.moveTo(x, neckY); ctx.lineTo(x, hipY); ctx.stroke();
+
+    // Arms
+    const a = 0.4 + (i % 3) * 0.15;
+    ctx.beginPath(); ctx.moveTo(x, neckY + bodyLen * 0.3); ctx.lineTo(x - Math.cos(a) * armLen, neckY + bodyLen * 0.3 + Math.sin(a) * armLen); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, neckY + bodyLen * 0.3); ctx.lineTo(x + Math.cos(a) * armLen, neckY + bodyLen * 0.3 - Math.sin(a) * armLen); ctx.stroke();
+
+    // Legs
+    const la = 0.45 + (i % 2) * 0.2;
+    ctx.beginPath(); ctx.moveTo(x, hipY); ctx.lineTo(x - Math.sin(la) * legLen * 0.6, hipY + Math.cos(la) * legLen * 0.6); ctx.lineTo(x - Math.sin(la) * legLen * 0.6 + legLen * 0.5, stickY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, hipY); ctx.lineTo(x + Math.sin(la) * legLen * 0.6, hipY + Math.cos(la) * legLen * 0.6); ctx.lineTo(x + Math.sin(la) * legLen * 0.6 - legLen * 0.3, stickY); ctx.stroke();
+  });
+
+  // Title text
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 20;
+
+  ctx.fillStyle = '#F1C40F';
+  ctx.font = 'bold 96px Arial';
+  ctx.fillText('STICK RUSH', W / 2, 140);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 36px Arial';
+  ctx.fillText("🇬🇭 GHANA'S ULTIMATE PARTY GAME", W / 2, 195);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '24px Arial';
+  ctx.fillText('3 Mini-Games  •  Educational Q&A  •  22 Costumes  •  Leaderboard', W / 2, 240);
+
+  ctx.shadowBlur = 0;
+}
+
+// Initialize
+window.onload = () => {
+  const row = document.getElementById('icons-row');
+  sizes.forEach(({ size, label }) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:4px;';
+
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    canvas.id = `icon-${size}`;
+    canvas.style.cssText = `width:${Math.min(size, 128)}px;height:${Math.min(size, 128)}px;`;
+
+    const ctx = canvas.getContext('2d');
+    drawIcon(ctx, size);
+
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:11px;color:#aaa;text-align:center;';
+    lbl.textContent = label;
+
+    const btn = document.createElement('button');
+    btn.textContent = '⬇ Save';
+    btn.style.cssText = 'font-size:11px;padding:4px 8px;margin:0;';
+    btn.onclick = () => downloadCanvas(canvas, `icon-${size}x${size}.png`);
+
+    wrap.appendChild(canvas);
+    wrap.appendChild(lbl);
+    wrap.appendChild(btn);
+    row.appendChild(wrap);
+  });
+
+  drawFeatureGraphic();
+};
+
+function downloadCanvas(canvas, filename) {
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function downloadAll() {
+  sizes.forEach(({ size }) => {
+    const canvas = document.getElementById(`icon-${size}`);
+    if (canvas) setTimeout(() => downloadCanvas(canvas, `icon-${size}x${size}.png`), size);
+  });
+}
+
+function downloadFeature() {
+  downloadCanvas(document.getElementById('feature'), 'feature-graphic-1024x500.png');
+}
+</script>
+</body>
+</html>

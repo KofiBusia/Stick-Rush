@@ -1,0 +1,22 @@
+{
+  "appId": "com.mannyharry.stickrush",
+  "appName": "Stick Rush",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#0D1117"
+  },
+  "ios": {
+    "contentInset": "always"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0D1117",
+      "showSpinner": false
+    }
+  }
+}

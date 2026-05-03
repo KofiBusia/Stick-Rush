@@ -1,0 +1,91 @@
+name: Build Android APK & AAB
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Copy web assets to www
+        run: |
+          mkdir -p www/js/games
+          cp index.html www/
+          cp style.css www/
+          cp js/*.js www/js/
+          cp js/games/*.js www/js/games/
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        run: cd android && ./gradlew assembleDebug --no-daemon
+
+      - name: Build Release AAB (unsigned)
+        run: cd android && ./gradlew bundleRelease --no-daemon
+
+      - name: Sign Release AAB
+        if: env.KEYSTORE_B64 != ''
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > android/app/stickrush.keystore
+          cd android && ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=app/stickrush.keystore \
+            -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$KEY_PASSWORD \
+            --no-daemon
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: StickRush-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: StickRush-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab

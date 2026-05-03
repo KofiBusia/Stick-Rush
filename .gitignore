@@ -1,0 +1,16 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# Android build outputs (keep source, ignore builds)
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+*.keystore
+!debug.keystore
+
+# Temporary files
+*.tmp
+*.zip
