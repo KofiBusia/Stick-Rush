@@ -1,110 +1,172 @@
 // ═══════════════════════════════════════════════════════
-//  STICK RUSH — QUESTION BANK
-//  Tier 1: Ages 8-10 | Tier 2: Ages 11-13 | Tier 3: Ages 14-16
+//  STICK RUSH — QUESTION BANK (v2 — 120 questions, no repeats)
 // ═══════════════════════════════════════════════════════
 
 const QUESTION_BANK = {
+  tier1: [ // Ages 8-10
+    // MATH
+    {subject:'Math',q:'What is 7 × 8?',options:['54','56','58','64'],answer:1,points:50},
+    {subject:'Math',q:'What is 144 ÷ 12?',options:['11','12','13','14'],answer:1,points:50},
+    {subject:'Math',q:'A bag of rice costs GHS 12. How much do 5 bags cost?',options:['GHS 55','GHS 60','GHS 65','GHS 70'],answer:1,points:60},
+    {subject:'Math',q:'What is 25% of 80?',options:['15','20','25','30'],answer:1,points:60},
+    {subject:'Math',q:'What is the next number? 2, 4, 8, 16, ___',options:['24','30','32','36'],answer:2,points:50},
+    {subject:'Math',q:'If you have GHS 50 and spend GHS 17, how much is left?',options:['GHS 27','GHS 33','GHS 37','GHS 43'],answer:1,points:50},
+    {subject:'Math',q:'What is 9 × 9?',options:['72','81','90','99'],answer:1,points:50},
+    {subject:'Math',q:'What is half of 96?',options:['42','46','48','52'],answer:2,points:50},
+    {subject:'Math',q:'A market woman has 3 dozen eggs. How many eggs is that?',options:['24','30','36','42'],answer:2,points:60},
+    {subject:'Math',q:'Round 347 to the nearest hundred.',options:['300','340','350','400'],answer:0,points:50},
+    {subject:'Math',q:'What is 15 + 28 + 37?',options:['70','75','80','85'],answer:2,points:50},
+    {subject:'Math',q:'Which fraction is biggest? 1/2, 1/3, 1/4, 1/5',options:['1/5','1/4','1/3','1/2'],answer:3,points:60},
+    {subject:'Math',q:'What is 6 squared?',options:['12','18','36','42'],answer:2,points:60},
+    {subject:'Math',q:'A rectangle is 8cm long and 5cm wide. What is its area?',options:['13cm²','26cm²','40cm²','45cm²'],answer:2,points:70},
+    {subject:'Math',q:'What is 1000 − 357?',options:['543','553','643','653'],answer:2,points:60},
+    {subject:'Math',q:'What is 3/4 of 40?',options:['20','25','30','35'],answer:2,points:60},
+    {subject:'Math',q:'How many minutes in 2 and a half hours?',options:['120','130','150','180'],answer:2,points:60},
+    {subject:'Math',q:'A shop sells 8 items at GHS 6 each. Total?',options:['GHS 42','GHS 48','GHS 54','GHS 56'],answer:1,points:60},
+    // ENGLISH
+    {subject:'English',q:'Which word is a noun? "The dog runs fast."',options:['The','dog','runs','fast'],answer:1,points:50},
+    {subject:'English',q:'What is the plural of "child"?',options:['childs','childen','children','childrens'],answer:2,points:50},
+    {subject:'English',q:'Choose the correct sentence:',options:['She go to school','She goes to school','She going to school','She gone to school'],answer:1,points:50},
+    {subject:'English',q:'What does "enormous" mean?',options:['Tiny','Average','Very large','Very fast'],answer:2,points:60},
+    {subject:'English',q:'Which is the opposite of "ancient"?',options:['Old','Broken','Modern','Slow'],answer:2,points:60},
+    {subject:'English',q:'Fill in: "He ___ football every day."',options:['play','plays','playing','played'],answer:1,points:50},
+    {subject:'English',q:'What punctuation ends a question?',options:['.','!','?',','],answer:2,points:50},
+    {subject:'English',q:'Which word is an adjective? "The tall boy ran quickly."',options:['The','tall','boy','ran'],answer:1,points:50},
+    {subject:'English',q:'What is the synonym of "happy"?',options:['Sad','Angry','Joyful','Tired'],answer:2,points:60},
+    {subject:'English',q:'"She has ___ apple." Which word fits?',options:['a','an','the','some'],answer:1,points:50},
+    {subject:'English',q:'What is the past tense of "run"?',options:['runned','ranned','ran','runs'],answer:2,points:60},
+    {subject:'English',q:'What does "predict" mean?',options:['To look back','To guess what will happen','To remember','To forget'],answer:1,points:70},
+    {subject:'English',q:'How many syllables in "beautiful"?',options:['2','3','4','5'],answer:1,points:60},
+    {subject:'English',q:'What is the plural of "ox"?',options:['oxes','oxen','ox','oxs'],answer:1,points:70},
+    {subject:'English',q:'What does "curious" mean?',options:['Bored','Eager to know','Afraid','Angry'],answer:1,points:50},
+    {subject:'English',q:'Fill in: "There ___ many students in the class."',options:['is','am','are','was'],answer:2,points:50},
+  ],
 
-  tier1: {
-    math: [
-      { q: "What is 7 × 8?", options: ["54","56","58","52"], answer: 1, points: 50 },
-      { q: "What is 45 ÷ 9?", options: ["4","5","6","7"], answer: 1, points: 50 },
-      { q: "If you have 3 bags with 12 oranges each, how many oranges total?", options: ["36","32","30","38"], answer: 0, points: 60 },
-      { q: "What is 100 − 37?", options: ["53","63","73","43"], answer: 1, points: 50 },
-      { q: "Which number is closest to 50? 44, 47, 53, 58", options: ["44","47","53","58"], answer: 2, points: 60 },
-      { q: "What is 9 + 6 + 8?", options: ["21","23","22","24"], answer: 1, points: 50 },
-      { q: "A market woman sells 6 tomatoes for GHS 3. What is 1 tomato?", options: ["GHS 0.50","GHS 1","GHS 2","GHS 3"], answer: 0, points: 70 },
-      { q: "What is ½ of 80?", options: ["20","30","40","50"], answer: 2, points: 50 },
-      { q: "What is 15 × 4?", options: ["50","55","60","65"], answer: 2, points: 50 },
-      { q: "How many sides does a hexagon have?", options: ["5","6","7","8"], answer: 1, points: 50 },
-      { q: "What is 36 + 48?", options: ["74","82","84","86"], answer: 2, points: 50 },
-      { q: "Round 67 to the nearest ten.", options: ["60","65","70","80"], answer: 2, points: 50 },
-    ],
-    english: [
-      { q: "Which word is a NOUN? 'The dog runs fast.'", options: ["runs","fast","dog","The"], answer: 2, points: 50 },
-      { q: "Choose the correct spelling:", options: ["beutiful","beautiful","beautifull","butiful"], answer: 1, points: 60 },
-      { q: "What is the plural of 'child'?", options: ["childs","childes","children","childrens"], answer: 2, points: 50 },
-      { q: "Fill in: 'She ___ her homework yesterday.'", options: ["do","does","did","doing"], answer: 2, points: 50 },
-      { q: "Which sentence is correct?", options: ["He go to school","He goes to school","He going to school","He goed to school"], answer: 1, points: 60 },
-      { q: "What is the opposite of 'hot'?", options: ["warm","cool","cold","icy"], answer: 2, points: 50 },
-      { q: "Choose the VERB: 'Kofi quickly ran to the market.'", options: ["Kofi","quickly","ran","market"], answer: 2, points: 50 },
-      { q: "Which punctuation ends a question?", options: ["!",".",",","?"], answer: 3, points: 50 },
-      { q: "What does 'enormous' mean?", options: ["tiny","average","very large","colourful"], answer: 2, points: 60 },
-      { q: "Correct the sentence: 'they went to the beach'", options: ["They went to the beach.","they Went to the beach.","They went To the beach.","they went to the Beach."], answer: 0, points: 60 },
-    ]
-  },
+  tier2: [ // Ages 11-13
+    // MATH
+    {subject:'Math',q:'A trader buys 40 oranges for GHS 12. Sells each for GHS 0.50. Profit or loss?',options:['Profit GHS 8','Loss GHS 4','No profit/loss','Profit GHS 20'],answer:0,points:80},
+    {subject:'Math',q:'What is 15% of 200?',options:['20','25','30','35'],answer:2,points:80},
+    {subject:'Math',q:'Solve: 3x + 7 = 22. What is x?',options:['3','4','5','6'],answer:2,points:90},
+    {subject:'Math',q:'Area of a triangle: base 10cm, height 6cm?',options:['16cm²','30cm²','60cm²','32cm²'],answer:1,points:90},
+    {subject:'Math',q:'If 3 pens cost GHS 4.50, what does 1 pen cost?',options:['GHS 1.00','GHS 1.50','GHS 2.00','GHS 1.25'],answer:1,points:80},
+    {subject:'Math',q:'What is √169?',options:['11','12','13','14'],answer:2,points:90},
+    {subject:'Math',q:'A car travels 90km in 1.5 hours. What is its speed?',options:['45km/h','60km/h','90km/h','135km/h'],answer:1,points:90},
+    {subject:'Math',q:'What is 2/3 + 1/4?',options:['3/7','5/6','7/12','11/12'],answer:3,points:100},
+    {subject:'Math',q:'Ratio of boys:girls = 3:5. If 24 boys, how many girls?',options:['30','35','40','45'],answer:2,points:90},
+    {subject:'Math',q:'What is the LCM of 4, 6 and 8?',options:['12','16','24','48'],answer:2,points:90},
+    {subject:'Math',q:'A shirt costs GHS 80 with 20% discount. Sale price?',options:['GHS 60','GHS 64','GHS 68','GHS 72'],answer:1,points:100},
+    {subject:'Math',q:'What is 0.75 as a fraction in simplest form?',options:['75/100','3/4','7/10','15/20'],answer:1,points:80},
+    {subject:'Math',q:'Perimeter of a square is 36cm. What is its area?',options:['36cm²','72cm²','81cm²','144cm²'],answer:2,points:100},
+    {subject:'Math',q:'What is 5! (5 factorial)?',options:['25','60','120','720'],answer:2,points:100},
+    {subject:'Math',q:'Express 0.4 as a percentage.',options:['4%','0.4%','40%','400%'],answer:2,points:80},
+    {subject:'Math',q:'Solve: 2(x − 3) = 10. What is x?',options:['4','5','7','8'],answer:3,points:90},
+    {subject:'Math',q:'What is the HCF of 24 and 36?',options:['6','8','12','18'],answer:2,points:90},
+    {subject:'Math',q:'A principal of GHS 1000 at 10% per annum. Simple interest after 2 years?',options:['GHS 100','GHS 150','GHS 200','GHS 250'],answer:2,points:100},
+    // ENGLISH
+    {subject:'English',q:'What literary device is: "The wind whispered through the trees"?',options:['Simile','Metaphor','Personification','Alliteration'],answer:2,points:80},
+    {subject:'English',q:'Identify the clause type: "Although it was raining, we played."',options:['Simple','Compound','Complex','Compound-complex'],answer:2,points:90},
+    {subject:'English',q:'Meaning of prefix "mis-" in "mislead"?',options:['Again','Before','Wrongly','Not'],answer:2,points:80},
+    {subject:'English',q:'Correct: "Neither the boys ___ the girl was ready."',options:['or','nor','and','but'],answer:1,points:90},
+    {subject:'English',q:'Tense of: "By tomorrow I will have finished"?',options:['Simple future','Future continuous','Future perfect','Present perfect'],answer:2,points:100},
+    {subject:'English',q:'Antonym of "transparent"?',options:['Clear','Obvious','Opaque','Bright'],answer:2,points:80},
+    {subject:'English',q:'What does "amiable" mean?',options:['Angry','Friendly','Brave','Clever'],answer:1,points:90},
+    {subject:'English',q:'Figure of speech: "He is as brave as a lion."',options:['Metaphor','Simile','Hyperbole','Irony'],answer:1,points:80},
+    {subject:'English',q:'Passive voice of "The dog bit the man":',options:['The man bit the dog','The man was bitten by the dog','The man is bitten','The dog was biting the man'],answer:1,points:90},
+    {subject:'English',q:'Which word is correctly spelled?',options:['Accomodate','Accommodate','Acomodate','Acommodate'],answer:1,points:80},
+    {subject:'English',q:'Noun form of "decide"?',options:['Decided','Decision','Decisive','Deciding'],answer:1,points:80},
+    {subject:'English',q:'Correct: "The news ___ shocking."',options:['are','were','is','have been'],answer:2,points:90},
+    {subject:'English',q:'What does "benevolent" mean?',options:['Evil','Kind and generous','Stubborn','Weak'],answer:1,points:100},
+    {subject:'English',q:'Identify: "She sells seashells by the seashore."',options:['Simile','Alliteration','Metaphor','Onomatopoeia'],answer:1,points:80},
+    {subject:'English',q:'What is an "idiom"?',options:['A type of poem','A phrase with non-literal meaning','A grammar rule','A punctuation mark'],answer:1,points:80},
+    {subject:'English',q:'What does "eloquent" mean?',options:['Ugly','Well-spoken','Timid','Greedy'],answer:1,points:90},
+  ],
 
-  tier2: {
-    math: [
-      { q: "What is 15% of 200?", options: ["20","25","30","35"], answer: 2, points: 80 },
-      { q: "Solve: 3x + 7 = 22. What is x?", options: ["3","4","5","6"], answer: 2, points: 100 },
-      { q: "A rectangle is 12cm × 8cm. What is the area?", options: ["40cm²","80cm²","96cm²","108cm²"], answer: 2, points: 80 },
-      { q: "What is the LCM of 4 and 6?", options: ["8","10","12","24"], answer: 2, points: 80 },
-      { q: "If 20% of a class of 40 are absent, how many are present?", options: ["28","30","32","34"], answer: 2, points: 100 },
-      { q: "What is √144?", options: ["11","12","13","14"], answer: 1, points: 80 },
-      { q: "Simplify: 18/24", options: ["1/2","2/3","3/4","4/5"], answer: 2, points: 80 },
-      { q: "What is 2³ × 3?", options: ["12","18","24","48"], answer: 2, points: 80 },
-      { q: "A shirt costs GHS 80. It's discounted 25%. New price?", options: ["GHS 55","GHS 60","GHS 65","GHS 70"], answer: 1, points: 100 },
-      { q: "What is the perimeter of a square with side 9cm?", options: ["18cm","27cm","36cm","45cm"], answer: 2, points: 80 },
-    ],
-    english: [
-      { q: "Identify the ADJECTIVE: 'The clever boy solved the puzzle.'", options: ["clever","boy","solved","puzzle"], answer: 0, points: 80 },
-      { q: "Which is correct? Past perfect tense:", options: ["She has eaten","She had eaten","She eating","She ate"], answer: 1, points: 100 },
-      { q: "What is a synonym for 'brave'?", options: ["afraid","courageous","weak","timid"], answer: 1, points: 80 },
-      { q: "Identify the type: 'Although it rained, they played outside.'", options: ["Simple sentence","Compound","Complex","Fragment"], answer: 2, points: 100 },
-      { q: "Choose the correct form: 'Neither the boys nor the girl ___ ready.'", options: ["are","were","was","is"], answer: 2, points: 100 },
-      { q: "What literary device is: 'The stars danced in the sky'?", options: ["Simile","Metaphor","Personification","Alliteration"], answer: 2, points: 100 },
-      { q: "Correct spelling:", options: ["recieve","receive","recive","reciev"], answer: 1, points: 80 },
-      { q: "What is the passive voice of: 'Kofi writes the letter'?", options: ["The letter writes Kofi","The letter is written by Kofi","Kofi is written the letter","The letter was writing"], answer: 1, points: 100 },
-      { q: "What does 'ambiguous' mean?", options: ["very clear","having two meanings","extremely fast","very old"], answer: 1, points: 80 },
-      { q: "Identify the ADVERB: 'She spoke softly to the child.'", options: ["She","spoke","softly","child"], answer: 2, points: 80 },
-    ]
-  },
-
-  tier3: {
-    math: [
-      { q: "Factorise: x² + 5x + 6", options: ["(x+1)(x+6)","(x+2)(x+3)","(x+3)(x+2)","(x-2)(x-3)"], answer: 1, points: 150 },
-      { q: "A car travels 180km in 2.5 hours. What is the average speed?", options: ["60km/h","65km/h","70km/h","72km/h"], answer: 3, points: 120 },
-      { q: "What is sin(30°)?", options: ["0","0.5","√2/2","1"], answer: 1, points: 150 },
-      { q: "Solve: 2x² − 8 = 0. x = ?", options: ["±1","±2","±3","±4"], answer: 1, points: 150 },
-      { q: "What is the gradient of y = 3x − 7?", options: ["-7","3","7","-3"], answer: 1, points: 120 },
-      { q: "A sum of GHS 5,000 earns 8% simple interest per year. Interest after 3 years?", options: ["GHS 800","GHS 1,000","GHS 1,200","GHS 1,500"], answer: 2, points: 150 },
-      { q: "What is log₁₀(1000)?", options: ["2","3","4","5"], answer: 1, points: 150 },
-      { q: "If P(A) = 0.3 and P(B) = 0.5 and they're independent, P(A and B) = ?", options: ["0.15","0.8","0.2","0.35"], answer: 0, points: 150 },
-      { q: "Differentiate y = 4x³ + 2x", options: ["12x² + 2","12x + 2","4x² + 2","12x³"], answer: 0, points: 150 },
-      { q: "A circle has circumference 44cm. What is its radius? (π=22/7)", options: ["5cm","6cm","7cm","8cm"], answer: 2, points: 150 },
-    ],
-    english: [
-      { q: "What is the subjunctive mood? 'I suggest that he ___ early.'", options: ["comes","came","come","will come"], answer: 2, points: 150 },
-      { q: "Identify the rhetorical device: 'To be or not to be, that is the question.'", options: ["Anaphora","Antithesis","Chiasmus","Epistrophe"], answer: 1, points: 150 },
-      { q: "What is the meaning of the prefix 'circum-'?", options: ["against","around","between","above"], answer: 1, points: 120 },
-      { q: "Choose the correct sentence (subjective case):", options: ["Between you and I","Between you and me","Between I and you","Betwen me and you"], answer: 1, points: 150 },
-      { q: "What literary device is used in 'Peter Piper picked a peck'?", options: ["Assonance","Onomatopoeia","Alliteration","Consonance"], answer: 2, points: 120 },
-      { q: "Which type of narrator knows all characters' thoughts?", options: ["First person","Third person limited","Third person omniscient","Second person"], answer: 2, points: 150 },
-      { q: "What is a 'non sequitur'?", options: ["A Latin phrase meaning 'it follows'","A conclusion that does not follow from premises","A type of metaphor","A formal argument"], answer: 1, points: 150 },
-      { q: "Identify the mood: 'If I were you, I would study harder.'", options: ["Indicative","Imperative","Subjunctive","Interrogative"], answer: 2, points: 150 },
-      { q: "What does 'perspicacious' mean?", options: ["slow to understand","having a ready insight","extremely brave","very talkative"], answer: 1, points: 150 },
-      { q: "Which is an example of dramatic irony?", options: ["A character says one thing but means another","The audience knows something characters don't","Two characters have opposite traits","A series of misunderstandings"], answer: 1, points: 150 },
-    ]
-  }
+  tier3: [ // Ages 14-16
+    // MATH
+    {subject:'Math',q:'Solve: x² − 5x + 6 = 0',options:['x=2,x=3','x=−2,x=−3','x=1,x=6','x=2,x=−3'],answer:0,points:120},
+    {subject:'Math',q:'What is sin(30°)?',options:['√3/2','1/2','√2/2','1'],answer:1,points:130},
+    {subject:'Math',q:'Differentiate y = 3x² + 2x − 1. What is dy/dx?',options:['6x + 2','3x + 2','6x − 1','3x² + 2'],answer:0,points:150},
+    {subject:'Math',q:'Cylinder: radius 7cm, height 10cm. Volume? (π≈22/7)',options:['1540cm³','770cm³','2200cm³','1100cm³'],answer:0,points:140},
+    {subject:'Math',q:'If log₂(x) = 5, what is x?',options:['10','25','32','64'],answer:2,points:150},
+    {subject:'Math',q:'Expand (2x + 3)²',options:['4x²+9','4x²+6x+9','4x²+12x+9','2x²+12x+9'],answer:2,points:130},
+    {subject:'Math',q:'Gradient of the line 3y = 6x + 9?',options:['2','3','6','9'],answer:0,points:120},
+    {subject:'Math',q:'Solve: 2x−3y=7 and x+y=6. Find x.',options:['4','5','6','7'],answer:1,points:140},
+    {subject:'Math',q:'Sum of interior angles of a hexagon?',options:['540°','640°','720°','900°'],answer:2,points:120},
+    {subject:'Math',q:'GHS 5000 at 12% simple interest p.a. for 3 years?',options:['GHS 1200','GHS 1500','GHS 1800','GHS 2000'],answer:2,points:130},
+    {subject:'Math',q:'What is ³√216?',options:['4','6','8','12'],answer:1,points:120},
+    {subject:'Math',q:'What is cos(60°)?',options:['√3/2','1/2','0','1'],answer:1,points:130},
+    {subject:'Math',q:'Simplify: (x² − 4)/(x − 2)',options:['x−2','x+2','x²+2','x'],answer:1,points:140},
+    {subject:'Math',q:'Range of: 4, 7, 2, 9, 1, 5, 8, 3?',options:['7','8','9','10'],answer:1,points:120},
+    {subject:'Math',q:'Integrate 4x³. What is the result?',options:['4x²','12x²','x⁴','4x⁴/4'],answer:2,points:150},
+    {subject:'Math',q:'Probability of rolling a 5 on a fair die?',options:['1/4','1/5','1/6','1/3'],answer:2,points:120},
+    {subject:'Math',q:'Nth term of sequence 3, 7, 11, 15...?',options:['4n−1','4n+1','3n+1','2n+1'],answer:0,points:130},
+    {subject:'Math',q:'Angle in a semicircle is always?',options:['45°','60°','90°','180°'],answer:2,points:120},
+    // ENGLISH
+    {subject:'English',q:'What does "vicarious" mean?',options:['Direct','Experienced through another','Selfish','Generous'],answer:1,points:120},
+    {subject:'English',q:'Mood of: "If I were rich, I would travel the world."',options:['Indicative','Imperative','Subjunctive','Interrogative'],answer:2,points:130},
+    {subject:'English',q:'Literary device: "It was the best of times, it was the worst of times"',options:['Paradox','Metaphor','Simile','Allusion'],answer:0,points:130},
+    {subject:'English',q:'Correct parallel structure?',options:['She likes swimming, to run and cycling','She likes to swim, run and cycling','She likes swimming, running and cycling','She likes swim, run and cycle'],answer:2,points:140},
+    {subject:'English',q:'What is a "denouement"?',options:['The opening','The rising action','The resolution after climax','The conflict'],answer:2,points:150},
+    {subject:'English',q:'What does "sycophant" mean?',options:['A brave leader','A flatterer who seeks favour','A wise teacher','A fierce warrior'],answer:1,points:140},
+    {subject:'English',q:'"Ask not what your country can do for you..." — rhetorical device?',options:['Anaphora','Chiasmus','Epistrophe','Alliteration'],answer:1,points:150},
+    {subject:'English',q:'What is an "oxymoron"?',options:['An exaggeration','Two contradictory words together','A hidden meaning','A repeated sound'],answer:1,points:130},
+    {subject:'English',q:'Example of dramatic irony?',options:['Character says one thing means another','Audience knows what character doesn\'t','Two opposites in one phrase','Comparison using like'],answer:1,points:140},
+    {subject:'English',q:'Correct: "Neither she nor they ___ wrong."',options:['was','is','are','were'],answer:2,points:130},
+    {subject:'English',q:'What does "ephemeral" mean?',options:['Lasting forever','Short-lived','Very large','Very small'],answer:1,points:120},
+    {subject:'English',q:'"The pen is mightier than the sword." — identify:',options:['Simile','Personification','Metaphor','Hyperbole'],answer:2,points:120},
+    {subject:'English',q:'What is "anaphora"?',options:['Repetition at end of lines','Repetition at start of lines','A type of rhyme','A narrative technique'],answer:1,points:150},
+    {subject:'English',q:'What does "juxtaposition" mean?',options:['A type of rhythm','Placing contrasting things side by side','A form of exaggeration','A metaphor about nature'],answer:1,points:140},
+    {subject:'English',q:'What does "laconic" mean?',options:['Talkative','Using very few words','Very emotional','Highly intelligent'],answer:1,points:140},
+    {subject:'English',q:'What is "hubris" in literature?',options:['Excessive pride leading to downfall','A type of narrator','A plot twist','A moral lesson'],answer:0,points:150},
+  ]
 };
 
-// Randomly sample n questions from a pool
-function getQuestions(tier, count = 3) {
-  const t = QUESTION_BANK[tier] || QUESTION_BANK.tier1;
-  const mathPool    = [...t.math].sort(() => Math.random() - 0.5);
-  const englishPool = [...t.english].sort(() => Math.random() - 0.5);
-  const questions = [];
+// Track used questions per session to prevent repeats
+const _usedQuestions = { tier1: new Set(), tier2: new Set(), tier3: new Set() };
+
+function getQuestions(tier, count) {
+  const bank = QUESTION_BANK[tier] || QUESTION_BANK.tier1;
+  const used = _usedQuestions[tier] || new Set();
+
+  // If we've used most questions, reset
+  let available = bank.filter((_, i) => !used.has(i));
+  if (available.length < count) {
+    _usedQuestions[tier] = new Set();
+    available = [...bank];
+  }
+
+  // Shuffle
+  const shuffled = [...available].sort(() => Math.random() - 0.5);
+
+  // Pick balanced Math/English mix
+  const mathQ    = shuffled.filter(q => q.subject === 'Math');
+  const engQ     = shuffled.filter(q => q.subject === 'English');
+  const picked   = [];
   const mathCount = Math.ceil(count / 2);
-  const engCount  = count - mathCount;
-  for (let i = 0; i < mathCount; i++)   questions.push({ ...mathPool[i],    subject: 'Math' });
-  for (let i = 0; i < engCount; i++)    questions.push({ ...englishPool[i], subject: 'English' });
-  return questions.sort(() => Math.random() - 0.5);
+
+  for (let i = 0; i < mathCount    && mathQ.length > 0; i++) picked.push(mathQ.shift());
+  for (let i = 0; i < count - mathCount && engQ.length  > 0; i++) picked.push(engQ.shift());
+  while (picked.length < count && shuffled.length > 0) {
+    const q = shuffled.shift();
+    if (!picked.includes(q)) picked.push(q);
+  }
+
+  // Mark as used
+  picked.forEach(q => { const idx = bank.indexOf(q); if (idx !== -1) used.add(idx); });
+  _usedQuestions[tier] = used;
+
+  return picked.sort(() => Math.random() - 0.5);
 }
 
-// Get tier from age
 function getTierFromAge(age) {
-  if (age <= 10) return 'tier1';
-  if (age <= 13) return 'tier2';
+  const a = parseInt(age);
+  if (a <= 10) return 'tier1';
+  if (a <= 13) return 'tier2';
   return 'tier3';
+}
+
+function resetUsedQuestions() {
+  _usedQuestions.tier1 = new Set();
+  _usedQuestions.tier2 = new Set();
+  _usedQuestions.tier3 = new Set();
 }

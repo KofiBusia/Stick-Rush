@@ -41,7 +41,7 @@
     <canvas id="menu-canvas"></canvas>
   </div>
   <div class="menu-buttons">
-    <button class="btn btn-gold btn-full" onclick="goSetup()">
+    <button class="btn btn-gold btn-full" onclick="goPlayerCount()">
       🏃 PLAY STICK RUSH
     </button>
     <button class="btn btn-blue btn-full" onclick="showLeaderboard()">
@@ -135,7 +135,7 @@
       </p>
     </div>
 
-    <button class="btn btn-gold" style="font-size:18px;padding:18px 36px;" onclick="Audio.playClick();startMiniGames();">
+    <button id="ri-start-btn" class="btn btn-gold" style="font-size:18px;padding:18px 36px;" onclick="Audio.playClick();startMiniGames();">
       ⚡ LET'S GO!
     </button>
     <br/>
@@ -158,6 +158,7 @@
     <div id="mgr-title" style="font-size:32px;font-weight:900;margin-bottom:6px;">🏆 You Won!</div>
     <div id="mgr-game" style="color:var(--muted);font-size:14px;margin-bottom:14px;"></div>
     <div id="mgr-score" style="font-size:44px;font-weight:900;color:var(--gold);"></div>
+    <div id="mgr-player" style="color:var(--gold);font-size:13px;font-weight:700;margin-top:4px;"></div>
     <div id="mgr-total" style="color:rgba(255,255,255,0.4);font-size:13px;margin:8px 0 22px;"></div>
     <button id="mgr-next-btn" class="btn btn-gold btn-full" style="font-size:16px;">Next Game →</button>
   </div>
@@ -334,6 +335,79 @@
   </div>
 </div>
 
+<!-- ══════════════════ PLAYER COUNT ══════════════ -->
+<div id="screen-player-count" class="screen" style="align-items:center;justify-content:center;text-align:center;padding:40px 24px;">
+  <div style="max-width:340px;width:100%;">
+    <button class="back-btn" style="margin-bottom:20px;" onclick="goMenu()">← Back</button>
+    <h2 style="font-size:26px;font-weight:900;color:var(--gold);margin-bottom:8px;">How Many Players?</h2>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:28px;">Up to 4 players can take turns on one device!</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <button class="btn btn-gold" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(1)">
+        1<br/><span style="font-size:13px;font-weight:600;">Solo</span>
+      </button>
+      <button class="btn btn-blue" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(2)">
+        2<br/><span style="font-size:13px;font-weight:600;">Duo</span>
+      </button>
+      <button class="btn btn-blue" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(3)">
+        3<br/><span style="font-size:13px;font-weight:600;">Trio</span>
+      </button>
+      <button class="btn btn-blue" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(4)">
+        4<br/><span style="font-size:13px;font-weight:600;">Squad</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ MULTIPLAYER SETUP ═════════ -->
+<div id="screen-mp-setup" class="screen">
+  <div style="padding:0 20px;max-width:480px;width:100%;margin:0 auto;">
+    <div style="padding-top:24px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+      <button class="back-btn" onclick="goPlayerCount()">← Back</button>
+      <h2 style="font-size:20px;font-weight:900;margin:0;">Player Setup</h2>
+    </div>
+    <div id="mp-players-container"></div>
+    <button class="btn btn-gold btn-full" style="font-size:18px;padding:18px;margin-top:8px;" onclick="saveMultiplayerAndPlay()">
+      ⚡ START GAME!
+    </button>
+    <div style="height:32px;"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ PLAYER TRANSITION ═════════ -->
+<div id="screen-player-turn" class="screen" style="align-items:center;justify-content:center;text-align:center;padding:32px 24px;">
+  <div style="max-width:320px;width:100%;">
+    <div style="font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Your Turn!</div>
+    <div id="pt-player-name" style="font-size:42px;font-weight:900;color:var(--gold);margin-bottom:6px;">Player 1</div>
+    <canvas id="pt-canvas" style="width:120px;height:160px;margin:12px auto;display:block;border-radius:14px;"></canvas>
+    <div style="margin:16px 0 8px;">
+      <div id="pt-game-name" style="font-size:22px;font-weight:800;color:#fff;"></div>
+      <div id="pt-game-num" style="font-size:13px;color:var(--muted);margin-top:4px;"></div>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin:16px 0 24px;">Hand the phone to this player, then tap Ready!</p>
+    <button id="pt-ready-btn" class="btn btn-gold" style="font-size:20px;padding:18px 44px;border-radius:50px;">
+      🎮 I'M READY!
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════ MULTIPLAYER RESULTS ═══════ -->
+<div id="screen-mp-results" class="screen">
+  <div style="padding:24px 20px;max-width:480px;width:100%;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:40px;margin-bottom:8px;">🏆</div>
+      <h2 style="font-size:26px;font-weight:900;color:var(--gold);margin:0;">Final Results!</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:4px;">Round Complete — Here's the Ranking</p>
+    </div>
+    <div id="mp-results-list"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
+      <button class="btn btn-gold btn-full" onclick="Audio.playClick();goPlayerCount();">🔄 Play Again</button>
+      <button class="btn btn-dark btn-full" onclick="Audio.playClick();showLeaderboard();">🏆 Leaderboard</button>
+      <button class="btn btn-dark btn-full" onclick="Audio.playClick();goMenu();">🏠 Menu</button>
+    </div>
+    <div style="height:32px;"></div>
+  </div>
+</div>
+
 <!-- ══════════════════ SCRIPTS ════════════════════ -->
 <script src="js/questions.js"></script>
 <script src="js/costumes.js"></script>
@@ -341,6 +415,11 @@
 <script src="js/games/sprint.js"></script>
 <script src="js/games/jump.js"></script>
 <script src="js/games/reflex.js"></script>
+<script src="js/games/colorblitz.js"></script>
+<script src="js/games/balloonpop.js"></script>
+<script src="js/games/mathdash.js"></script>
+<script src="js/games/memorymatch.js"></script>
+<script src="js/games/rhythmtap.js"></script>
 <script src="js/game.js"></script>
 
 <script>
@@ -379,7 +458,7 @@ function handlePayment(provider) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let f = 0;
-  const costumes = ['default','firewarrior','ninjastrike','goldenchampion','shadowkick'];
+  const costumes = ['default','redathlete','bluestar','ninjastrike','blazerunner'];
   const positions = [0.1, 0.3, 0.5, 0.7, 0.9];
   function draw() {
     const W = canvas.width  = canvas.offsetWidth  || 360;

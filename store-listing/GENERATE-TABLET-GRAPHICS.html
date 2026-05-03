@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Stick Rush — Tablet Screenshots</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0d0d; color: #fff; font-family: Arial, sans-serif; padding: 20px; }
+  h1 { color: #F1C40F; font-size: 20px; margin-bottom: 6px; }
+  p  { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+  h2 { color: #F1C40F; font-size: 14px; margin: 20px 0 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+  .row  { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .card { display: flex; flex-direction: column; align-items: center; gap: 7px; background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid #333; }
+  .label { font-size: 11px; color: #aaa; }
+  .dl { background: #F1C40F; color: #000; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+  #dl-all { background: #27AE60; color: #fff; border: none; padding: 14px 32px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 24px; display: block; width: 100%; max-width: 400px; }
+  .tag { background:#E74C3C; color:#fff; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; margin-left:6px; }
+  .tag.b { background:#2980B9; }
+</style>
+</head>
+<body>
+
+<h1>📱 Stick Rush — Tablet Screenshots Generator</h1>
+<p>Generates 3 screenshots for 7-inch (1280×800) and 3 for 10-inch (2560×1600) tablets. Landscape layout.</p>
+
+<button id="dl-all" onclick="downloadAll()">⬇ DOWNLOAD ALL 6 TABLET SCREENSHOTS</button>
+
+<h2>7-Inch Tablet <span class="tag">1280 × 800 px</span></h2>
+<div class="row">
+  <div class="card">
+    <canvas id="t7a" width="1280" height="800" style="width:320px;height:200px;"></canvas>
+    <div class="label">7" — Main Menu</div>
+    <button class="dl" onclick="dl('t7a','tablet7_1_menu.png')">⬇ Save</button>
+  </div>
+  <div class="card">
+    <canvas id="t7b" width="1280" height="800" style="width:320px;height:200px;"></canvas>
+    <div class="label">7" — Gameplay</div>
+    <button class="dl" onclick="dl('t7b','tablet7_2_gameplay.png')">⬇ Save</button>
+  </div>
+  <div class="card">
+    <canvas id="t7c" width="1280" height="800" style="width:320px;height:200px;"></canvas>
+    <div class="label">7" — Q&A Round</div>
+    <button class="dl" onclick="dl('t7c','tablet7_3_qa.png')">⬇ Save</button>
+  </div>
+</div>
+
+<h2>10-Inch Tablet <span class="tag b">2560 × 1600 px</span></h2>
+<div class="row">
+  <div class="card">
+    <canvas id="t10a" width="2560" height="1600" style="width:320px;height:200px;"></canvas>
+    <div class="label">10" — Main Menu</div>
+    <button class="dl" onclick="dl('t10a','tablet10_1_menu.png')">⬇ Save</button>
+  </div>
+  <div class="card">
+    <canvas id="t10b" width="2560" height="1600" style="width:320px;height:200px;"></canvas>
+    <div class="label">10" — Gameplay</div>
+    <button class="dl" onclick="dl('t10b','tablet10_2_gameplay.png')">⬇ Save</button>
+  </div>
+  <div class="card">
+    <canvas id="t10c" width="2560" height="1600" style="width:320px;height:200px;"></canvas>
+    <div class="label">10" — Q&A Round</div>
+    <button class="dl" onclick="dl('t10c','tablet10_3_qa.png')">⬇ Save</button>
+  </div>
+</div>
+
+<script>
+function dl(id, name) {
+  const a = document.createElement('a');
+  a.download = name;
+  a.href = document.getElementById(id).toDataURL('image/png');
+  a.click();
+}
+function downloadAll() {
+  [['t7a','tablet7_1_menu.png'],['t7b','tablet7_2_gameplay.png'],['t7c','tablet7_3_qa.png'],
+   ['t10a','tablet10_1_menu.png'],['t10b','tablet10_2_gameplay.png'],['t10c','tablet10_3_qa.png']]
+  .forEach(([id,n],i) => setTimeout(() => dl(id,n), i*400));
+}
+
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+function drawStick(ctx,x,y,sc,col,la,aa){
+  ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=Math.max(2,sc*3);
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  const hR=11*sc,bL=26*sc,lL=22*sc,aL=18*sc;
+  const hY=y-lL-bL-hR, nY=hY+hR, hipY=nY+bL;
+  ctx.beginPath(); ctx.arc(x,hY,hR,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x,nY); ctx.lineTo(x,hipY); ctx.stroke();
+  const aA=aa||0.4;
+  ctx.beginPath(); ctx.moveTo(x,nY+bL*0.3); ctx.lineTo(x-Math.cos(aA)*aL,nY+bL*0.3+Math.sin(aA)*aL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,nY+bL*0.3); ctx.lineTo(x+Math.cos(aA)*aL,nY+bL*0.3-Math.sin(aA)*aL); ctx.stroke();
+  const lA=la||0.5;
+  ctx.beginPath(); ctx.moveTo(x,hipY); ctx.lineTo(x-Math.sin(lA)*lL*0.6,hipY+Math.cos(lA)*lL*0.6); ctx.lineTo(x-Math.sin(lA)*lL*0.6+lL*0.45,y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,hipY); ctx.lineTo(x+Math.sin(lA)*lL*0.6,hipY+Math.cos(lA)*lL*0.6); ctx.lineTo(x+Math.sin(lA)*lL*0.6-lL*0.3,y); ctx.stroke();
+}
+
+function bgGrad(ctx,W,H,c1,c2){
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,c1); g.addColorStop(1,c2);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+}
+function stars(ctx,W,H,n){
+  ctx.fillStyle='rgba(255,255,255,0.65)';
+  for(let i=0;i<n;i++){ctx.beginPath();ctx.arc((i*197+50)%W,(i*83+10)%(H*0.7),0.5+(i%3)*0.6,0,Math.PI*2);ctx.fill();}
+}
+
+// ── DRAW MENU (landscape) ─────────────────────────────────
+function drawMenu(id) {
+  const c = document.getElementById(id);
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const S = W / 1280; // scale factor
+
+  bgGrad(ctx,W,H,'#0B3D91','#0B0F14');
+  stars(ctx,W,H,60);
+
+  // Left panel — stickmen
+  const groundY = H*0.88;
+  ctx.fillStyle='#2C3E50'; ctx.fillRect(0,groundY,W*0.45,H-groundY);
+  ctx.fillStyle='#F1C40F'; ctx.fillRect(0,groundY,W*0.45,3*S);
+
+  const colors=['#E74C3C','#F1C40F','#2ECC71','#9B59B6'];
+  [0.08,0.18,0.28,0.38].forEach((p,i)=>{
+    drawStick(ctx,W*p,groundY,2.2*S,colors[i],0.45+i*0.05,0.38+i*0.04);
+  });
+
+  // Right panel — UI
+  const px = W*0.48;
+
+  // Title
+  ctx.textAlign='left'; ctx.shadowColor='rgba(0,0,0,0.8)'; ctx.shadowBlur=20;
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${H*0.18}px Arial`;
+  ctx.fillText('STICK', px, H*0.28);
+  ctx.fillText('RUSH', px, H*0.48);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font=`bold ${H*0.06}px Arial`;
+  ctx.fillText("🇬🇭 GHANA'S ULTIMATE PARTY GAME", px, H*0.58);
+
+  // Buttons
+  const btns=[['🏃  PLAY STICK RUSH','#F1C40F','#000'],['🏆  LEADERBOARD','#2980B9','#fff'],['ℹ️  HOW TO PLAY','#2C3E50','#fff']];
+  btns.forEach(([lbl,bg,fg],i)=>{
+    const by=H*0.66+i*H*0.11;
+    rr(ctx,px,by,W*0.48,H*0.09,10*S); ctx.fillStyle=bg; ctx.fill();
+    ctx.fillStyle=fg; ctx.font=`bold ${H*0.055}px Arial`; ctx.textAlign='left';
+    ctx.fillText(lbl,px+20*S,by+H*0.062);
+  });
+
+  // Score badge
+  ctx.fillStyle='rgba(241,196,15,0.1)';
+  rr(ctx,px,H*0.1,W*0.25,H*0.1,8*S); ctx.fill();
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${H*0.065}px Arial`; ctx.textAlign='center';
+  ctx.fillText('⭐ Total Score: 0', px+W*0.125, H*0.175);
+
+  // Footer
+  ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font=`${H*0.042}px Arial`; ctx.textAlign='center';
+  ctx.fillText('Round 1 FREE  •  Round 2+ = GHS 5  •  Ages 8–16', W*0.72, H*0.96);
+}
+
+// ── DRAW GAMEPLAY (landscape) — Reflex Blaster ───────────
+function drawGameplay(id) {
+  const c = document.getElementById(id);
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const S = W / 1280;
+
+  // Dark arena
+  const bg=ctx.createRadialGradient(W/2,H/2,80,W/2,H/2,H);
+  bg.addColorStop(0,'#1B2631'); bg.addColorStop(1,'#0B0F14');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=80*S){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=80*S){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // HUD bar
+  ctx.fillStyle='rgba(0,0,0,0.55)'; ctx.fillRect(0,0,W,H*0.12);
+  // Timer bar
+  ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(20*S,8*S,W-40*S,18*S);
+  ctx.fillStyle='#F39C12'; ctx.fillRect(20*S,8*S,(W-40*S)*0.42,18*S);
+  ctx.fillStyle='#fff'; ctx.font=`bold ${H*0.04}px Arial`; ctx.textAlign='center';
+  ctx.fillText('⏱ 8.4s', W/2, H*0.07);
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${H*0.07}px Arial`; ctx.textAlign='left';
+  ctx.fillText('⭐ 680', 20*S, H*0.105);
+  ctx.fillStyle='#F39C12'; ctx.font=`bold ${H*0.065}px Arial`; ctx.textAlign='right';
+  ctx.fillText('🔥 COMBO x5!', W-20*S, H*0.105);
+
+  // Targets
+  const targets=[
+    {x:W*0.15,y:H*0.3,r:55*S,col:'#E74C3C',str:'#922B21',pct:0.7},
+    {x:W*0.38,y:H*0.22,r:45*S,col:'#3498DB',str:'#1A5276',pct:0.45},
+    {x:W*0.55,y:H*0.45,r:65*S,col:'#F1C40F',str:'#D4AC0D',pct:0.85},
+    {x:W*0.72,y:H*0.25,r:50*S,col:'#2ECC71',str:'#1E8449',pct:0.35},
+    {x:W*0.88,y:H*0.5,r:48*S,col:'#9B59B6',str:'#6C3483',pct:0.6},
+    {x:W*0.25,y:H*0.62,r:42*S,col:'#E74C3C',str:'#922B21',pct:0,hit:true},
+    {x:W*0.62,y:H*0.65,r:50*S,col:'#3498DB',str:'#1A5276',pct:0,hit:true},
+  ];
+  targets.forEach(t=>{
+    ctx.globalAlpha=t.hit?0.3:1;
+    if(!t.hit){
+      ctx.beginPath(); ctx.arc(t.x,t.y,t.r*1.18+8*S,0,Math.PI*2);
+      ctx.strokeStyle=t.col+'88'; ctx.lineWidth=3*S; ctx.stroke();
+      ctx.beginPath(); ctx.arc(t.x,t.y,t.r+6*S,-Math.PI/2,-Math.PI/2+Math.PI*2*t.pct);
+      ctx.strokeStyle=t.col; ctx.lineWidth=5*S; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(t.x,t.y,t.r,0,Math.PI*2);
+    const g=ctx.createRadialGradient(t.x-8*S,t.y-8*S,3*S,t.x,t.y,t.r);
+    g.addColorStop(0,t.hit?'#aaa':t.col); g.addColorStop(1,t.hit?'#555':t.str);
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle=t.str; ctx.lineWidth=3*S; ctx.stroke();
+    if(t.hit){ctx.fillStyle='#fff';ctx.font=`bold ${t.r*1.1}px Arial`;ctx.textAlign='center';ctx.fillText('✓',t.x,t.y+t.r*0.38);}
+    ctx.globalAlpha=1;
+  });
+
+  // Score popups
+  [[W*0.25,H*0.52,'+100'],[W*0.62,H*0.58,'+110']].forEach(([px,py,pts])=>{
+    ctx.fillStyle='#F1C40F'; ctx.font=`bold ${H*0.065}px Arial`; ctx.textAlign='center'; ctx.fillText(pts,px,py);
+  });
+
+  // Ground + stickman
+  const gY=H*0.85;
+  ctx.fillStyle='#1A252F'; ctx.fillRect(0,gY,W,H-gY);
+  ctx.fillStyle='#F1C40F'; ctx.fillRect(0,gY,W,4*S);
+  drawStick(ctx,W/2,gY,2.5*S,'#F1C40F',0.3,0.5);
+
+  // Instruction banner
+  ctx.fillStyle='rgba(0,0,0,0.8)';
+  rr(ctx,W/2-200*S,H*0.88,400*S,H*0.1,14*S); ctx.fill();
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${H*0.055}px Arial`; ctx.textAlign='center';
+  ctx.fillText('👆 TAP the circles!', W/2, H*0.94);
+}
+
+// ── DRAW Q&A (landscape) ──────────────────────────────────
+function drawQA(id) {
+  const c = document.getElementById(id);
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const S = W / 1280;
+
+  bgGrad(ctx,W,H,'#0B0F14','#1A252F');
+
+  // Left: question panel
+  const panelW = W*0.52;
+  ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(0,0,panelW,H);
+  ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(panelW,0); ctx.lineTo(panelW,H); ctx.stroke();
+
+  // Header
+  ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(0,0,panelW,H*0.14);
+  ctx.fillStyle='#fff'; ctx.font=`bold ${H*0.1}px Arial`; ctx.textAlign='center';
+  ctx.fillText('📚 Brain Challenge!', panelW/2, H*0.1);
+  ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.font=`${H*0.055}px Arial`;
+  ctx.fillText('Question 2 of 3', panelW/2, H*0.135);
+
+  // Timer bar
+  ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(20*S,H*0.16,panelW-40*S,14*S);
+  ctx.fillStyle='#F39C12'; ctx.fillRect(20*S,H*0.16,(panelW-40*S)*0.53,14*S);
+  ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font=`${H*0.05}px Arial`;
+  ctx.fillText('⏱ 8s', panelW/2, H*0.245);
+
+  // Question card
+  ctx.fillStyle='rgba(255,255,255,0.06)';
+  rr(ctx,20*S,H*0.26,panelW-40*S,H*0.55,16*S); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=2; ctx.stroke();
+
+  // Math badge
+  ctx.fillStyle='#2980B9';
+  rr(ctx,panelW/2-80*S,H*0.3,160*S,H*0.1,10*S); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font=`bold ${H*0.065}px Arial`; ctx.textAlign='center';
+  ctx.fillText('📐 Math', panelW/2, H*0.375);
+
+  // Question text
+  ctx.fillStyle='#fff'; ctx.font=`bold ${H*0.072}px Arial`;
+  ctx.fillText('A trader buys 40 oranges', panelW/2, H*0.48);
+  ctx.fillText('for GHS 12. Sells each for', panelW/2, H*0.555);
+  ctx.fillStyle='#F1C40F';
+  ctx.fillText('GHS 0.50. Profit or Loss?', panelW/2, H*0.63);
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font=`${H*0.048}px Arial`;
+  ctx.fillText('+80 pts for correct answer', panelW/2, H*0.7);
+
+  // Progress dots
+  [0,1,2].forEach(i=>{
+    ctx.beginPath(); ctx.arc(panelW/2+(i-1)*40*S, H*0.78, 14*S, 0, Math.PI*2);
+    ctx.fillStyle=i===1?'#F1C40F':'rgba(255,255,255,0.2)'; ctx.fill();
+  });
+
+  // Right: answer options
+  const optX = panelW + W*0.03;
+  const optW  = W*0.44;
+  const opts=[
+    {letter:'A',text:'Profit of GHS 8',   correct:true,  chosen:false},
+    {letter:'B',text:'Loss of GHS 4',     correct:false, chosen:false},
+    {letter:'C',text:'No profit or loss', correct:false, chosen:true},
+    {letter:'D',text:'Profit of GHS 20',  correct:false, chosen:false},
+  ];
+  opts.forEach((o,i)=>{
+    const oy = H*0.1 + i*(H*0.22);
+    const oh = H*0.18;
+    let bg='rgba(255,255,255,0.06)', border='rgba(255,255,255,0.12)';
+    if(o.correct){bg='rgba(39,174,96,0.25)'; border='#27AE60';}
+    if(o.chosen&&!o.correct){bg='rgba(231,76,60,0.25)'; border='#E74C3C';}
+    rr(ctx,optX,oy,optW,oh,14*S); ctx.fillStyle=bg; ctx.fill();
+    ctx.strokeStyle=border; ctx.lineWidth=3*S; ctx.stroke();
+    // Letter circle
+    ctx.beginPath(); ctx.arc(optX+55*S,oy+oh/2,38*S,0,Math.PI*2);
+    ctx.fillStyle=o.correct?'#27AE60':o.chosen?'#E74C3C':'rgba(255,255,255,0.12)'; ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font=`bold ${H*0.08}px Arial`; ctx.textAlign='center';
+    ctx.fillText(o.letter, optX+55*S, oy+oh/2+H*0.028);
+    // Option text
+    ctx.fillStyle='#fff'; ctx.font=`${H*0.068}px Arial`; ctx.textAlign='left';
+    ctx.fillText(o.text, optX+108*S, oy+oh/2+H*0.026);
+    // Icon
+    if(o.correct){ctx.fillStyle='#27AE60';ctx.font=`bold ${H*0.09}px Arial`;ctx.textAlign='right';ctx.fillText('✓',optX+optW-20*S,oy+oh/2+H*0.032);}
+    if(o.chosen&&!o.correct){ctx.fillStyle='#E74C3C';ctx.font=`bold ${H*0.09}px Arial`;ctx.textAlign='right';ctx.fillText('✗',optX+optW-20*S,oy+oh/2+H*0.032);}
+  });
+
+  // Ghana flag
+  ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.font=`${H*0.1}px Arial`; ctx.textAlign='center';
+  ctx.fillText('🇬🇭', W*0.76, H*0.97);
+}
+
+// ── RUN ───────────────────────────────────────────────────
+window.onload = () => {
+  ['t7a','t10a'].forEach(drawMenu);
+  ['t7b','t10b'].forEach(drawGameplay);
+  ['t7c','t10c'].forEach(drawQA);
+};
+</script>
+</body>
+</html>

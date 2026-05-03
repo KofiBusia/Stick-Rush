@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Stick Rush — Store Graphics Generator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0d0d; color: #fff; font-family: Arial, sans-serif; padding: 20px; }
+  h1 { color: #F1C40F; font-size: 22px; margin-bottom: 6px; }
+  p { color: #aaa; font-size: 13px; margin-bottom: 20px; }
+  .section { margin-bottom: 32px; }
+  h2 { color: #F1C40F; font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 6px; }
+  .card { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; margin: 8px; background: #1a1a1a; padding: 12px; border-radius: 10px; border: 1px solid #333; }
+  .card canvas { border-radius: 8px; }
+  .label { font-size: 11px; color: #aaa; text-align: center; }
+  .dl-btn { background: #F1C40F; color: #000; border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+  .dl-btn:hover { background: #d4ac0d; }
+  #download-all { background: #27AE60; color: #fff; border: none; padding: 14px 32px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 24px; display: block; width: 100%; max-width: 400px; }
+  #download-all:hover { background: #229954; }
+  .row { display: flex; flex-wrap: wrap; }
+  .tag { display: inline-block; background: #E74C3C; color: #fff; font-size: 10px; font-weight: bold; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+  .tag.opt { background: #2980B9; }
+</style>
+</head>
+<body>
+
+<h1>🎮 Stick Rush — Google Play Graphics Generator</h1>
+<p>All graphics are generated below. Click "Download All" or save each one individually. Right-click any canvas → "Save image as" also works.</p>
+
+<button id="download-all" onclick="downloadAll()">⬇ DOWNLOAD ALL 7 GRAPHICS AT ONCE</button>
+
+<!-- ICON -->
+<div class="section">
+  <h2>App Icon <span class="tag">REQUIRED</span> — 512 × 512 px</h2>
+  <div class="row">
+    <div class="card">
+      <canvas id="icon-512" width="512" height="512" style="width:160px;height:160px;"></canvas>
+      <div class="label">512 × 512 px</div>
+      <button class="dl-btn" onclick="dl('icon-512','icon_512x512.png')">⬇ Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE GRAPHIC -->
+<div class="section">
+  <h2>Feature Graphic <span class="tag">REQUIRED</span> — 1024 × 500 px</h2>
+  <div class="row">
+    <div class="card">
+      <canvas id="feature" width="1024" height="500" style="width:360px;height:176px;"></canvas>
+      <div class="label">1024 × 500 px</div>
+      <button class="dl-btn" onclick="dl('feature','feature_graphic_1024x500.png')">⬇ Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHONE SCREENSHOTS -->
+<div class="section">
+  <h2>Phone Screenshots <span class="tag">REQUIRED</span> — 1080 × 1920 px (need at least 2, upload all 5)</h2>
+  <div class="row">
+    <div class="card">
+      <canvas id="ss1" width="1080" height="1920" style="width:110px;height:196px;"></canvas>
+      <div class="label">1 — Main Menu</div>
+      <button class="dl-btn" onclick="dl('ss1','screenshot_1_menu.png')">⬇ Download</button>
+    </div>
+    <div class="card">
+      <canvas id="ss2" width="1080" height="1920" style="width:110px;height:196px;"></canvas>
+      <div class="label">2 — Sprint Dash</div>
+      <button class="dl-btn" onclick="dl('ss2','screenshot_2_sprint.png')">⬇ Download</button>
+    </div>
+    <div class="card">
+      <canvas id="ss3" width="1080" height="1920" style="width:110px;height:196px;"></canvas>
+      <div class="label">3 — Jump Fever</div>
+      <button class="dl-btn" onclick="dl('ss3','screenshot_3_jump.png')">⬇ Download</button>
+    </div>
+    <div class="card">
+      <canvas id="ss4" width="1080" height="1920" style="width:110px;height:196px;"></canvas>
+      <div class="label">4 — Reflex Blaster</div>
+      <button class="dl-btn" onclick="dl('ss4','screenshot_4_reflex.png')">⬇ Download</button>
+    </div>
+    <div class="card">
+      <canvas id="ss5" width="1080" height="1920" style="width:110px;height:196px;"></canvas>
+      <div class="label">5 — Q&A Round</div>
+      <button class="dl-btn" onclick="dl('ss5','screenshot_5_qa.png')">⬇ Download</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── HELPERS ────────────────────────────────────────────────
+function dl(id, filename) {
+  const canvas = document.getElementById(id);
+  const a = document.createElement('a');
+  a.download = filename;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function downloadAll() {
+  const files = [
+    ['icon-512','icon_512x512.png'],
+    ['feature','feature_graphic_1024x500.png'],
+    ['ss1','screenshot_1_menu.png'],
+    ['ss2','screenshot_2_sprint.png'],
+    ['ss3','screenshot_3_jump.png'],
+    ['ss4','screenshot_4_reflex.png'],
+    ['ss5','screenshot_5_qa.png'],
+  ];
+  files.forEach(([id, name], i) => setTimeout(() => dl(id, name), i * 400));
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawStick(ctx, x, y, scale, color, legAngle, armAngle) {
+  const lw = Math.max(2, scale * 3);
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = lw;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const headR   = 11 * scale;
+  const bodyLen = 26 * scale;
+  const legLen  = 22 * scale;
+  const armLen  = 18 * scale;
+  const headY   = y - legLen - bodyLen - headR;
+  const neckY   = headY + headR;
+  const hipY    = neckY + bodyLen;
+
+  // head
+  ctx.beginPath(); ctx.arc(x, headY, headR, 0, Math.PI*2); ctx.fill();
+
+  // body
+  ctx.beginPath(); ctx.moveTo(x, neckY); ctx.lineTo(x, hipY); ctx.stroke();
+
+  // arms
+  const aA = armAngle || 0.4;
+  ctx.beginPath(); ctx.moveTo(x, neckY+bodyLen*0.3); ctx.lineTo(x - Math.cos(aA)*armLen, neckY+bodyLen*0.3+Math.sin(aA)*armLen); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, neckY+bodyLen*0.3); ctx.lineTo(x + Math.cos(aA)*armLen, neckY+bodyLen*0.3-Math.sin(aA)*armLen); ctx.stroke();
+
+  // legs
+  const lA = legAngle || 0.5;
+  ctx.beginPath(); ctx.moveTo(x,hipY); ctx.lineTo(x-Math.sin(lA)*legLen*0.6, hipY+Math.cos(lA)*legLen*0.6); ctx.lineTo(x-Math.sin(lA)*legLen*0.6+legLen*0.45, y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,hipY); ctx.lineTo(x+Math.sin(lA)*legLen*0.6, hipY+Math.cos(lA)*legLen*0.6); ctx.lineTo(x+Math.sin(lA)*legLen*0.6-legLen*0.3, y); ctx.stroke();
+}
+
+function bgGrad(ctx, W, H, c1, c2) {
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, c1); g.addColorStop(1, c2);
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+}
+
+function stars(ctx, W, H, count) {
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  for (let i=0; i<count; i++) {
+    ctx.beginPath();
+    ctx.arc((i*197+50)%W, (i*83+20)%(H*0.55), 0.5+(i%3)*0.5, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function phoneFrame(ctx, W, H) {
+  // status bar
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillRect(0, 0, W, 60);
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.font = `bold ${W*0.03}px Arial`;
+  ctx.textAlign = 'right';
+  ctx.fillText('9:41  ▪ ▪ ▪', W-30, 40);
+  ctx.textAlign = 'left';
+}
+
+function timerBar(ctx, x, y, W, pct, label) {
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(x, y, W, 28);
+  const barColor = pct > 0.5 ? '#2ECC71' : pct > 0.25 ? '#F39C12' : '#E74C3C';
+  ctx.fillStyle = barColor;
+  ctx.fillRect(x, y, W*pct, 28);
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${W*0.04}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.fillText(label, x+W/2, y+20);
+}
+
+// ══════════════════════════════════════════════════════════
+// 1. APP ICON 512×512
+// ══════════════════════════════════════════════════════════
+function drawIcon() {
+  const canvas = document.getElementById('icon-512');
+  const ctx = canvas.getContext('2d');
+  const W = 512, H = 512;
+
+  // Rounded rect background
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#0B3D91');
+  bg.addColorStop(0.5, '#1A0533');
+  bg.addColorStop(1, '#0d0d0d');
+  roundRect(ctx, 0, 0, W, H, 80);
+  ctx.fillStyle = bg; ctx.fill();
+
+  // Stars
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  for (let i=0; i<30; i++) {
+    ctx.beginPath();
+    ctx.arc((i*137+20)%W, (i*79+10)%(H*0.5), 0.8+(i%3)*0.7, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Ground
+  const groundY = H * 0.84;
+  ctx.fillStyle = 'rgba(241,196,15,0.15)';
+  ctx.fillRect(0, groundY, W, H-groundY);
+  ctx.fillStyle = '#F1C40F';
+  ctx.fillRect(0, groundY, W, 5);
+
+  // Speed lines
+  for (let i=0; i<4; i++) {
+    const lineY = groundY - 80 - i*55;
+    ctx.strokeStyle = `rgba(241,196,15,${0.35-i*0.07})`;
+    ctx.lineWidth = 4-i;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(W*0.12, lineY);
+    ctx.lineTo(W*0.12 + (50-i*10), lineY);
+    ctx.stroke();
+  }
+
+  // Main stickman (gold, running)
+  drawStick(ctx, W*0.54, groundY, 3.2, '#F1C40F', 0.55, 0.45);
+
+  // Shadow stickman
+  ctx.globalAlpha = 0.15;
+  drawStick(ctx, W*0.54+18, groundY+10, 3.2, '#fff', 0.55, 0.45);
+  ctx.globalAlpha = 1;
+
+  // "SR" badge bottom right
+  ctx.fillStyle = 'rgba(241,196,15,0.15)';
+  roundRect(ctx, W-110, H-80, 90, 52, 10); ctx.fill();
+  ctx.fillStyle = '#F1C40F';
+  ctx.font = 'bold 36px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('SR', W-65, H-44);
+
+  // Title text top
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${W*0.09}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 15;
+  ctx.fillText('STICK', W/2, 100);
+  ctx.fillStyle = '#F1C40F';
+  ctx.fillText('RUSH', W/2, 160);
+  ctx.shadowBlur = 0;
+
+  // Ghana flag strip top-left
+  const gh = [['#006B3F',0],['#FCD116',14],['#CE1126',28]];
+  gh.forEach(([c,dx]) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(32+dx, 32, 14, 42);
+  });
+  // Black star in flag
+  ctx.fillStyle = '#000';
+  ctx.font = '14px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('★', 36, 61);
+}
+
+// ══════════════════════════════════════════════════════════
+// 2. FEATURE GRAPHIC 1024×500
+// ══════════════════════════════════════════════════════════
+function drawFeature() {
+  const canvas = document.getElementById('feature');
+  const ctx = canvas.getContext('2d');
+  const W = 1024, H = 500;
+
+  // Background
+  bgGrad(ctx, W, H, '#0B3D91', '#0d0d0d');
+  stars(ctx, W, H, 60);
+
+  // Ground
+  ctx.fillStyle = '#1A252F';
+  ctx.fillRect(0, H-90, W, 90);
+  ctx.fillStyle = '#F1C40F';
+  ctx.fillRect(0, H-90, W, 5);
+
+  // Ghana flag strip left edge
+  [['#006B3F',0],['#FCD116',20],['#CE1126',40]].forEach(([c,dy]) => {
+    ctx.fillStyle = c; ctx.fillRect(0, dy, 8, 20);
+  });
+
+  // 5 stickmen running across bottom
+  const stickColors = ['#E74C3C','#3498DB','#F1C40F','#2ECC71','#9B59B6'];
+  const stickX = [110, 270, 512, 760, 910];
+  const stickScales = [1.8, 1.9, 2.6, 1.9, 1.8];
+  const legAngles  = [0.5, 0.4, 0.55, 0.42, 0.5];
+  const armAngles  = [0.35, 0.45, 0.4, 0.38, 0.42];
+
+  stickX.forEach((x, i) => {
+    // glow under center stickman
+    if (i === 2) {
+      const glow = ctx.createRadialGradient(x, H-90, 0, x, H-90, 120);
+      glow.addColorStop(0, 'rgba(241,196,15,0.25)');
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.fillRect(x-120, H-210, 240, 120);
+    }
+    drawStick(ctx, x, H-90, stickScales[i], stickColors[i], legAngles[i], armAngles[i]);
+  });
+
+  // STICK RUSH title
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.9)';
+  ctx.shadowBlur = 24;
+  ctx.fillStyle = '#F1C40F';
+  ctx.font = 'bold 108px Arial';
+  ctx.fillText('STICK RUSH', W/2, 148);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 36px Arial';
+  ctx.fillText("🇬🇭 GHANA'S ULTIMATE PARTY GAME", W/2, 200);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.font = '24px Arial';
+  ctx.fillText('3 Mini-Games  •  Educational Q&A  •  22 Costumes  •  Ages 8–16', W/2, 248);
+
+  // Badges
+  const badges = [['ROUND 1 FREE','#27AE60'], ['GHS 5/ROUND','#E67E22'], ['AGES 8-16','#8E44AD']];
+  badges.forEach(([txt, col], i) => {
+    const bx = W*0.3 + i*145, by = 285;
+    roundRect(ctx, bx-60, by, 130, 36, 8);
+    ctx.fillStyle = col; ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText(txt, bx, by+23);
+  });
+
+  ctx.shadowBlur = 0;
+}
+
+// ══════════════════════════════════════════════════════════
+// 3. SCREENSHOT 1 — MAIN MENU
+// ══════════════════════════════════════════════════════════
+function drawSS1() {
+  const canvas = document.getElementById('ss1');
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1920;
+
+  bgGrad(ctx, W, H, '#0B3D91', '#0B0F14');
+  stars(ctx, W, H, 80);
+  phoneFrame(ctx, W, H);
+
+  // Title
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 30;
+  ctx.fillStyle = '#F1C40F';
+  ctx.font = `bold ${W*0.13}px Arial`;
+  ctx.fillText('STICK', W/2, 280);
+  ctx.fillText('RUSH', W/2, 420);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = `bold ${W*0.045}px Arial`;
+  ctx.fillText('🇬🇭 GHANA\'S ULTIMATE PARTY GAME', W/2, 500);
+  ctx.shadowBlur = 0;
+
+  // Score badge
+  ctx.fillStyle = 'rgba(241,196,15,0.1)';
+  roundRect(ctx, W/2-200, 550, 400, 70, 14); ctx.fill();
+  ctx.fillStyle = '#F1C40F';
+  ctx.font = `bold ${W*0.04}px Arial`;
+  ctx.fillText('Total Score: ⭐ 0', W/2, 595);
+
+  // Animated stickmen row
+  const groundY = H*0.52;
+  ctx.fillStyle = '#2C3E50'; ctx.fillRect(0, groundY, W, H*0.48);
+  ctx.fillStyle = '#F1C40F'; ctx.fillRect(0, groundY, W, 5);
+
+  const colors = ['#E74C3C','#3498DB','#F1C40F','#2ECC71','#9B59B6'];
+  [0.15, 0.3, 0.5, 0.7, 0.85].forEach((pct, i) => {
+    drawStick(ctx, W*pct, groundY, 2.2, colors[i], 0.45+i*0.06, 0.38+i*0.04);
+  });
+
+  // Buttons
+  const btnY = [H*0.62, H*0.72, H*0.80];
+  const btnLabels = ['🏃  PLAY STICK RUSH', '🏆  LEADERBOARD', 'ℹ️  HOW TO PLAY'];
+  const btnColors = ['#F1C40F', '#2980B9', '#2C3E50'];
+  const btnText   = ['#000', '#fff', '#fff'];
+  btnLabels.forEach((lbl, i) => {
+    const bx = W*0.1, bw = W*0.8, bh = H*0.075;
+    roundRect(ctx, bx, btnY[i]-bh*0.5, bw, bh, 20);
+    ctx.fillStyle = btnColors[i]; ctx.fill();
+    ctx.fillStyle = btnText[i];
+    ctx.font = `bold ${W*0.046}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.fillText(lbl, W/2, btnY[i]+18);
+  });
+
+  // Footer
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = `${W*0.032}px Arial`;
+  ctx.fillText('Round 1 FREE  •  Round 2+ = GHS 5  •  Ages 8–16', W/2, H*0.92);
+}
+
+// ══════════════════════════════════════════════════════════
+// 4. SCREENSHOT 2 — SPRINT DASH
+// ══════════════════════════════════════════════════════════
+function drawSS2() {
+  const canvas = document.getElementById('ss2');
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1920;
+
+  bgGrad(ctx, W, H, '#0B3D91', '#000');
+  stars(ctx, W, H, 50);
+  phoneFrame(ctx, W, H);
+
+  // Game HUD top
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(0, 60, W, 80);
+  ctx.fillStyle = '#F1C40F';
+  ctx.font = `bold ${W*0.042}px Arial`;
+  ctx.textAlign = 'left';
+  ctx.fillText('🏃 Sprint Dash', 40, 112);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#aaa';
+  ctx.font = `${W*0.035}px Arial`;
+  ctx.fillText('Game 1 of 3', W-40, 112);
+
+  // Track area
+  const trackY = H*0.18;
+  ctx.fillStyle = '#1A252F';
+  ctx.fillRect(0, trackY, W, H*0.6);
+
+  // Track lines
+  for (let lane=0; lane<2; lane++) {
+    const laneY = trackY + H*0.15 + lane*(H*0.22);
+    // Lane background
+    ctx.fillStyle = lane===0 ? 'rgba(241,196,15,0.05)' : 'rgba(255,255,255,0.03)';
+    ctx.fillRect(0, laneY-30, W, H*0.18);
+    // Finish line
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([20,20]);
+    ctx.beginPath(); ctx.moveTo(0, laneY+H*0.09-30); ctx.lineTo(W, laneY+H*0.09-30); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Finish line
+  const finishX = W*0.9;
+  for (let fy=trackY; fy<trackY+H*0.6; fy+=40) {
+    ctx.fillStyle = (Math.floor(fy/40)%2===0) ? '#fff' : '#000';
+    ctx.fillRect(finishX, fy, 30, 40);
+  }
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${W*0.04}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.fillText('FINISH', finishX+15, trackY-14);
+
+  // Progress bars
+  const barLabels = ['YOU','CPU'];
+  const barPcts   = [0.62, 0.47];
+  const barColors = ['#F1C40F','#E74C3C'];
+  barLabels.forEach((lbl, i) => {
+    const barY = trackY + H*0.04 + i*(H*0.22);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(W*0.15, barY, W*0.7, 28);
+    ctx.fillStyle = barColors[i];
+    ctx.fillRect(W*0.15, barY, W*0.7*barPcts[i], 28);
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${W*0.032}px Arial`;
+    ctx.textAlign = 'left';
+    ctx.fillText(lbl, W*0.05, barY+20);
+    ctx.textAlign = 'right';
+    ctx.fillText(`${Math.round(barPcts[i]*100)}m`, W*0.92, barY+20);
+  });
+
+  // Stickmen on track
+  const lane1Y = trackY + H*0.23;
+  const lane2Y = trackY + H*0.45;
+  drawStick(ctx, W*barPcts[0]*0.85+W*0.05, lane1Y, 2.8, '#F1C40F', 0.55, 0.42);
+  drawStick(ctx, W*barPcts[1]*0.85+W*0.05, lane2Y, 2.8, '#E74C3C', 0.4, 0.5);
+
+  // Lane labels
+  ctx.fillStyle = '#F1C40F'; ctx.font=`bold ${W*0.038}px Arial`; ctx.textAlign='left';
+  ctx.fillText('⭐ YOU', 40, lane1Y-H*0.1-20);
+  ctx.fillStyle = '#E74C3C';
+  ctx.fillText('🤖 CPU', 40, lane2Y-H*0.1-20);
+
+  // TAP instruction
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  roundRect(ctx, W/2-280, H*0.82, 560, 120, 20); ctx.fill();
+  ctx.fillStyle = '#F1C40F';
+  ctx.font = `bold ${W*0.055}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.fillText('👆 TAP TO RUN FASTER!', W/2, H*0.82+70);
+  ctx.fillStyle = '#aaa'; ctx.font=`${W*0.035}px Arial`;
+  ctx.fillText('Tap as fast as you can!', W/2, H*0.82+105);
+
+  // Score
+  timerBar(ctx, 40, 155, W-80, 0.75, '⏱ 11.3s');
+  ctx.fillStyle = '#F1C40F'; ctx.font=`bold ${W*0.05}px Arial`; ctx.textAlign='left';
+  ctx.fillText('⭐ 240', 40, H*0.91);
+  ctx.fillStyle='#aaa'; ctx.font=`${W*0.032}px Arial`; ctx.textAlign='right';
+  ctx.fillText('Taps: 48', W-40, H*0.91);
+}
+
+// ══════════════════════════════════════════════════════════
+// 5. SCREENSHOT 3 — JUMP FEVER
+// ══════════════════════════════════════════════════════════
+function drawSS3() {
+  const canvas = document.getElementById('ss3');
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1920;
+
+  // Sky
+  bgGrad(ctx, W, H, '#1A0533', '#3B1F6A');
+  stars(ctx, W, H, 70);
+  phoneFrame(ctx, W, H);
+
+  // HUD
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,60,W,80);
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${W*0.042}px Arial`; ctx.textAlign='left';
+  ctx.fillText('🦘 Jump Fever', 40, 112);
+  ctx.textAlign='right'; ctx.fillStyle='#aaa'; ctx.font=`${W*0.035}px Arial`;
+  ctx.fillText('Game 2 of 3', W-40, 112);
+  timerBar(ctx, 40, 155, W-80, 0.55, '⏱ 11.0s');
+
+  // Ground
+  const groundY = H*0.76;
+  ctx.fillStyle = '#2C3E50'; ctx.fillRect(0, groundY, W, H-groundY);
+  ctx.fillStyle = '#F1C40F'; ctx.fillRect(0, groundY, W, 6);
+
+  // Vertical lines on ground
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 2;
+  for (let x=0; x<W; x+=120) {
+    ctx.beginPath(); ctx.moveTo(x,groundY); ctx.lineTo(x,H); ctx.stroke();
+  }
+
+  // Obstacles
+  const obstacles = [
+    {x:W*0.65, y:groundY-100, w:55, h:100, color:'#E74C3C'},
+    {x:W*0.78, y:groundY-160, w:55, h:160, color:'#E67E22'},
+    {x:W*0.93, y:groundY-100, w:55, h:100, color:'#E74C3C'},
+  ];
+  obstacles.forEach(o => {
+    ctx.fillStyle = o.color; ctx.fillRect(o.x, o.y, o.w, o.h);
+    // Spikes
+    ctx.fillStyle = '#922B21';
+    for (let sx=o.x; sx<o.x+o.w; sx+=22) {
+      ctx.beginPath(); ctx.moveTo(sx,o.y); ctx.lineTo(sx+11,o.y-22); ctx.lineTo(sx+22,o.y); ctx.fill();
+    }
+  });
+
+  // Coins
+  const coinPositions = [{x:W*0.45,y:groundY-220},{x:W*0.55,y:groundY-260},{x:W*0.35,y:groundY-180}];
+  coinPositions.forEach(c => {
+    ctx.beginPath(); ctx.arc(c.x,c.y,28,0,Math.PI*2);
+    const cg = ctx.createRadialGradient(c.x-8,c.y-8,4,c.x,c.y,28);
+    cg.addColorStop(0,'#FFE566'); cg.addColorStop(1,'#D4AC0D');
+    ctx.fillStyle=cg; ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font=`bold ${W*0.028}px Arial`; ctx.textAlign='center';
+    ctx.fillText('₵',c.x,c.y+10);
+  });
+
+  // Player (airborne - mid jump)
+  const playerX = W*0.22;
+  const playerY = groundY - 260;
+  drawStick(ctx, playerX, playerY, 3.2, '#F1C40F', 0.2, 0.6);
+
+  // Jump arc trail
+  ctx.strokeStyle='rgba(241,196,15,0.25)'; ctx.lineWidth=3; ctx.setLineDash([12,12]);
+  ctx.beginPath();
+  for (let t=0; t<=1; t+=0.05) {
+    const px2 = playerX + t*W*0.25;
+    const py2 = playerY + (t-0.5)*(t-0.5)*1200 - 300;
+    if (t===0) ctx.moveTo(px2,py2); else ctx.lineTo(px2,py2);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // HUD stats
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${W*0.05}px Arial`; ctx.textAlign='left';
+  ctx.fillText('⭐ 310', 40, H*0.88);
+  ctx.fillStyle='#FFD700'; ctx.font=`bold ${W*0.04}px Arial`;
+  ctx.fillText('₵ ×4', 40, H*0.91);
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font=`${W*0.032}px Arial`; ctx.textAlign='right';
+  ctx.fillText('Speed: 5.5x', W-40, H*0.88);
+
+  // Double jump hint
+  ctx.fillStyle='rgba(0,0,0,0.75)';
+  roundRect(ctx, W/2-280, H*0.93, 560, 100, 20); ctx.fill();
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${W*0.048}px Arial`; ctx.textAlign='center';
+  ctx.fillText('👆 TAP to JUMP!', W/2, H*0.93+58);
+  ctx.fillStyle='#aaa'; ctx.font=`${W*0.03}px Arial`;
+  ctx.fillText('Double-tap for DOUBLE JUMP!', W/2, H*0.93+90);
+}
+
+// ══════════════════════════════════════════════════════════
+// 6. SCREENSHOT 4 — REFLEX BLASTER
+// ══════════════════════════════════════════════════════════
+function drawSS4() {
+  const canvas = document.getElementById('ss4');
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1920;
+
+  // Dark arena
+  const bg = ctx.createRadialGradient(W/2,H/2,100,W/2,H/2,H);
+  bg.addColorStop(0,'#1B2631'); bg.addColorStop(1,'#0B0F14');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+  for (let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for (let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  phoneFrame(ctx, W, H);
+
+  // HUD
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,60,W,80);
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${W*0.042}px Arial`; ctx.textAlign='left';
+  ctx.fillText('🎯 Reflex Blaster', 40, 112);
+  ctx.textAlign='right'; ctx.fillStyle='#aaa'; ctx.font=`${W*0.035}px Arial`;
+  ctx.fillText('Game 3 of 3', W-40, 112);
+  timerBar(ctx, 40, 155, W-80, 0.4, '⏱ 8.0s');
+
+  // Score + combo
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${W*0.055}px Arial`; ctx.textAlign='left';
+  ctx.fillText('⭐ 680', 40, 230);
+  ctx.fillStyle='#2ECC71'; ctx.font=`${W*0.036}px Arial`;
+  ctx.fillText('✓ 12   ✗ 2', 40, 270);
+  ctx.fillStyle='#F39C12'; ctx.font=`bold ${W*0.055}px Arial`; ctx.textAlign='right';
+  ctx.fillText('🔥 COMBO x5!', W-40, 230);
+
+  // Targets
+  const targets = [
+    {x:W*0.22,y:H*0.28,r:70,color:'#E74C3C',stroke:'#922B21',pct:0.7,hit:false},
+    {x:W*0.72,y:H*0.22,r:58,color:'#3498DB',stroke:'#1A5276',pct:0.45,hit:false},
+    {x:W*0.5, y:H*0.42,r:80,color:'#F1C40F',stroke:'#D4AC0D',pct:0.85,hit:false},
+    {x:W*0.18,y:H*0.52,r:55,color:'#2ECC71',stroke:'#1E8449',pct:0.3,hit:false},
+    {x:W*0.8, y:H*0.48,r:65,color:'#9B59B6',stroke:'#6C3483',pct:0.6,hit:false},
+    {x:W*0.38,y:H*0.65,r:50,color:'#E74C3C',stroke:'#922B21',pct:0.2,hit:true},
+    {x:W*0.65,y:H*0.62,r:60,color:'#3498DB',stroke:'#1A5276',pct:0.5,hit:true},
+  ];
+
+  targets.forEach(t => {
+    ctx.globalAlpha = t.hit ? 0.3 : 1;
+
+    // Pulse ring
+    if (!t.hit) {
+      ctx.beginPath(); ctx.arc(t.x, t.y, t.r*1.15+12, 0, Math.PI*2);
+      ctx.strokeStyle=t.color+'88'; ctx.lineWidth=4; ctx.stroke();
+      // Countdown arc
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, t.r+8, -Math.PI/2, -Math.PI/2+Math.PI*2*t.pct);
+      ctx.strokeStyle=t.color; ctx.lineWidth=7; ctx.stroke();
+    }
+
+    // Main circle
+    ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI*2);
+    const g = ctx.createRadialGradient(t.x-10,t.y-10,5,t.x,t.y,t.r);
+    g.addColorStop(0, t.hit ? '#aaa' : t.color);
+    g.addColorStop(1, t.hit ? '#555' : t.stroke);
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle=t.stroke; ctx.lineWidth=4; ctx.stroke();
+
+    if (t.hit) {
+      ctx.fillStyle='#fff'; ctx.font=`bold ${t.r*1.1}px Arial`; ctx.textAlign='center';
+      ctx.fillText('✓', t.x, t.y+t.r*0.38);
+    }
+    ctx.globalAlpha=1;
+  });
+
+  // +pts popups
+  [[W*0.38,H*0.58,'+100'],[W*0.65,H*0.55,'+110']].forEach(([px,py,pts]) => {
+    ctx.fillStyle='#F1C40F'; ctx.font=`bold ${W*0.045}px Arial`; ctx.textAlign='center';
+    ctx.fillText(pts, px, py);
+  });
+
+  // Ground + stickman
+  ctx.fillStyle='#1A252F'; ctx.fillRect(0,H-160,W,160);
+  ctx.fillStyle='#F1C40F'; ctx.fillRect(0,H-160,W,6);
+  drawStick(ctx, W*0.5, H-160, 2.5, '#F1C40F', 0.3, 0.5);
+
+  // Instruction
+  ctx.fillStyle='rgba(0,0,0,0.8)';
+  roundRect(ctx, W/2-300, H*0.88, 600, 100, 20); ctx.fill();
+  ctx.fillStyle='#F1C40F'; ctx.font=`bold ${W*0.046}px Arial`; ctx.textAlign='center';
+  ctx.fillText('👆 TAP the glowing circles!', W/2, H*0.88+60);
+  ctx.fillStyle='#aaa'; ctx.font=`${W*0.03}px Arial`;
+  ctx.fillText('Build combos for bonus points!', W/2, H*0.88+92);
+}
+
+// ══════════════════════════════════════════════════════════
+// 7. SCREENSHOT 5 — Q&A
+// ══════════════════════════════════════════════════════════
+function drawSS5() {
+  const canvas = document.getElementById('ss5');
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1920;
+
+  bgGrad(ctx, W, H, '#0B0F14', '#1A252F');
+  phoneFrame(ctx, W, H);
+
+  // Header
+  ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(0,60,W,180);
+  ctx.fillStyle='#fff'; ctx.font=`bold ${W*0.065}px Arial`; ctx.textAlign='center';
+  ctx.fillText('📚 Brain Challenge!', W/2, 135);
+  ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font=`${W*0.038}px Arial`;
+  ctx.fillText('Question 2 of 3', W/2, 185);
+
+  // Timer bar
+  ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(40,205,W-80,22);
+  ctx.fillStyle='#F39C12'; ctx.fillRect(40,205,(W-80)*0.53,22);
+
+  // Timer text
+  ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.font=`${W*0.036}px Arial`; ctx.textAlign='center';
+  ctx.fillText('⏱ 8s', W/2, 248);
+
+  // Question card
+  ctx.fillStyle='rgba(255,255,255,0.06)';
+  roundRect(ctx, 40, 280, W-80, 340, 24); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=2; ctx.stroke();
+
+  // Math badge
+  ctx.fillStyle='#2980B9';
+  roundRect(ctx, W/2-80, 310, 160, 54, 12); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font=`bold ${W*0.04}px Arial`; ctx.textAlign='center';
+  ctx.fillText('📐 Math', W/2, 348);
+
+  // Question text
+  ctx.fillStyle='#fff'; ctx.font=`bold ${W*0.055}px Arial`;
+  ctx.fillText('A trader buys 40 oranges for', W/2, 430);
+  ctx.fillText('GHS 12 and sells each for', W/2, 494);
+  ctx.fillStyle='#F1C40F';
+  ctx.fillText('GHS 0.50. Profit or Loss?', W/2, 558);
+
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font=`${W*0.033}px Arial`;
+  ctx.fillText('+80 pts for correct answer', W/2, 608);
+
+  // Answer options
+  const options = [
+    {letter:'A', text:'Profit of GHS 8', correct:true,  chosen:false},
+    {letter:'B', text:'Loss of GHS 4',   correct:false, chosen:false},
+    {letter:'C', text:'No profit or loss', correct:false, chosen:true},
+    {letter:'D', text:'Profit of GHS 20', correct:false, chosen:false},
+  ];
+
+  options.forEach((opt, i) => {
+    const oy = 680 + i * 240;
+    let bg='rgba(255,255,255,0.06)', border='rgba(255,255,255,0.15)', txtColor='#fff';
+    if (opt.chosen && !opt.correct) { bg='rgba(231,76,60,0.25)'; border='#E74C3C'; }
+    if (opt.correct) { bg='rgba(39,174,96,0.25)'; border='#27AE60'; }
+
+    roundRect(ctx, 40, oy, W-80, 200, 20);
+    ctx.fillStyle=bg; ctx.fill();
+    ctx.strokeStyle=border; ctx.lineWidth=3; ctx.stroke();
+
+    // Letter circle
+    ctx.beginPath(); ctx.arc(120, oy+100, 50, 0, Math.PI*2);
+    ctx.fillStyle=opt.correct?'#27AE60':opt.chosen?'#E74C3C':'rgba(255,255,255,0.1)';
+    ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font=`bold ${W*0.055}px Arial`; ctx.textAlign='center';
+    ctx.fillText(opt.letter, 120, oy+116);
+
+    ctx.fillStyle=txtColor; ctx.textAlign='left';
+    ctx.font=`${W*0.046}px Arial`;
+    ctx.fillText(opt.text, 200, oy+110);
+
+    // Result icon
+    if (opt.correct) { ctx.textAlign='right'; ctx.fillStyle='#27AE60'; ctx.font=`${W*0.06}px Arial`; ctx.fillText('✓', W-60, oy+115); }
+    if (opt.chosen && !opt.correct) { ctx.textAlign='right'; ctx.fillStyle='#E74C3C'; ctx.font=`${W*0.06}px Arial`; ctx.fillText('✗', W-60, oy+115); }
+  });
+
+  // Ghana flag bottom
+  ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.font=`${W*0.08}px Arial`; ctx.textAlign='center';
+  ctx.fillText('🇬🇭', W/2, H-60);
+}
+
+// ── DRAW EVERYTHING ────────────────────────────────────────
+window.onload = () => {
+  drawIcon();
+  drawFeature();
+  drawSS1();
+  drawSS2();
+  drawSS3();
+  drawSS4();
+  drawSS5();
+};
+</script>
+</body>
+</html>
