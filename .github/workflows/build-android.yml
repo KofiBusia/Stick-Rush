@@ -1,9 +1,8 @@
-name: Build Android APK & AAB
+name: Build & Sign Android AAB
 
 on:
   push:
     branches: [main, master]
-    tags: ['v*']
   workflow_dispatch:
 
 jobs:
@@ -23,15 +22,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Copy web assets to www
-        run: |
-          mkdir -p www/js/games
-          cp index.html www/
-          cp style.css www/
-          cp js/*.js www/js/
-          cp js/games/*.js www/js/games/
-
-      - name: Sync Capacitor
+      - name: Sync Capacitor (copy www → android assets)
         run: npx cap sync android
 
       - name: Set up JDK 17
@@ -53,39 +44,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Restore signing keystore
+        run: |
+          echo "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" | base64 -d > android/app/stickrush.keystore
+
       - name: Grant execute permission to gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK
-        run: cd android && ./gradlew assembleDebug --no-daemon
-
-      - name: Build Release AAB (unsigned)
+      - name: Build signed Release AAB
         run: cd android && ./gradlew bundleRelease --no-daemon
-
-      - name: Sign Release AAB
-        if: env.KEYSTORE_B64 != ''
-        env:
-          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          echo "$KEYSTORE_B64" | base64 -d > android/app/stickrush.keystore
-          cd android && ./gradlew bundleRelease \
-            -Pandroid.injected.signing.store.file=app/stickrush.keystore \
-            -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-            -Pandroid.injected.signing.key.password=$KEY_PASSWORD \
-            --no-daemon
-
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: StickRush-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload Release AAB
         uses: actions/upload-artifact@v4
         with:
-          name: StickRush-release-aab
+          name: StickRush-v2.2-release
           path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30

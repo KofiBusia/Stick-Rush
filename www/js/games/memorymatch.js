@@ -289,10 +289,14 @@ class MemoryMatch {
       tapY = (e.clientY - rect.top)  * scaleY;
     }
 
+    this._tapAt(tapX, tapY);
+  }
+
+  _tapAt(x, y) {
     for (const c of this.cards) {
       if (c.matched || c.faceUp) continue;
-      if (tapX >= c.x && tapX <= c.x + this.cardW &&
-          tapY >= c.y && tapY <= c.y + this.cardH) {
+      if (x >= c.x && x <= c.x + this.cardW &&
+          y >= c.y && y <= c.y + this.cardH) {
         // Flip card up
         c.faceUp  = true;
         c.flipDir = 1;

@@ -263,9 +263,13 @@ class ColorBlitz {
       tapY = (e.clientY - rect.top)  * scaleY;
     }
 
+    this._tapAt(tapX, tapY);
+  }
+
+  _tapAt(x, y) {
     for (const btn of this.buttons) {
-      if (tapX >= btn.x && tapX <= btn.x + btn.w &&
-          tapY >= btn.y && tapY <= btn.y + btn.h) {
+      if (x >= btn.x && x <= btn.x + btn.w &&
+          y >= btn.y && y <= btn.y + btn.h) {
         if (btn.color.name === this.currentColor.name) {
           this.combo++;
           const pts = 60 * Math.max(1, Math.floor(this.combo / 2));

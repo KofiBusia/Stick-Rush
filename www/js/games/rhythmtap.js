@@ -355,7 +355,10 @@ class RhythmTap {
   _onTap(e) {
     e.preventDefault();
     if (this.finished) return;
+    this._tap();
+  }
 
+  _tap() {
     // Find the closest beat to the target zone
     let best = null;
     let bestDist = Infinity;

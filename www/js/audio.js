@@ -62,21 +62,48 @@ class AudioManager {
   loadVoices() {
     if (!this.synth) return;
     this.voices = this.synth.getVoices();
-    // Prefer English voices
-    this.preferredVoice = this.voices.find(v =>
-      v.lang.startsWith('en') && v.name.toLowerCase().includes('female')
-    ) || this.voices.find(v => v.lang.startsWith('en')) || this.voices[0] || null;
+    // Default priority: well-known smooth voices first
+    const auto =
+      this.voices.find(v => v.name === 'Google UK English Female') ||
+      this.voices.find(v => v.name === 'Google US English Female') ||
+      this.voices.find(v => v.name === 'Samantha') ||
+      this.voices.find(v => v.name === 'Karen') ||
+      this.voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+      this.voices.find(v => v.lang === 'en-GB') ||
+      this.voices.find(v => v.lang === 'en-US') ||
+      this.voices.find(v => v.lang.startsWith('en')) ||
+      this.voices[0] || null;
+    this.preferredVoice = auto;
+    // Override with user-saved preference
+    try {
+      const saved = localStorage.getItem('stickrush_voice');
+      if (saved) {
+        const found = this.voices.find(v => v.name === saved);
+        if (found) this.preferredVoice = found;
+      }
+    } catch(e) {}
   }
 
-  speak(text, rate = 1.1, pitch = 1.0) {
+  setVoice(name) {
+    const found = this.voices.find(v => v.name === name);
+    if (found) {
+      this.preferredVoice = found;
+      try { localStorage.setItem('stickrush_voice', name); } catch(e) {}
+    }
+  }
+
+  speak(text, rate = 0.9, pitch = 1.0) {
     if (!this.synth || !this.enabled || !text) return;
     this.synth.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.rate  = rate;
-    utt.pitch = pitch;
-    utt.volume = 1;
-    if (this.preferredVoice) utt.voice = this.preferredVoice;
-    this.synth.speak(utt);
+    // Brief delay after cancel prevents Android speech stutter
+    setTimeout(() => {
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.rate   = rate;
+      utt.pitch  = pitch;
+      utt.volume = 1;
+      if (this.preferredVoice) utt.voice = this.preferredVoice;
+      this.synth.speak(utt);
+    }, 60);
   }
 
   cheer(type, name = '', extra = '') {
@@ -85,7 +112,7 @@ class AudioManager {
     if (!scripts || scripts.length === 0) return;
     const script = scripts[Math.floor(Math.random() * scripts.length)];
     const text = typeof script === 'function' ? script(name || extra) : script;
-    this.speak(text, 1.15, 1.1);
+    this.speak(text, 0.92, 1.0);
   }
 
   _initSFX() {

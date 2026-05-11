@@ -39,7 +39,6 @@ class JumpFever {
     this.raf         = null;
     this.bgX         = 0;
 
-    this._bind();
   }
 
   _bind() {
@@ -69,6 +68,7 @@ class JumpFever {
   }
 
   start() {
+    this._bind();
     this.startTime = Date.now();
     this._spawnObstacle();
     this._loop();

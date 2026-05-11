@@ -292,11 +292,16 @@ class BalloonPop {
       tapY = (e.clientY - rect.top)  * scaleY;
     }
 
+    this._tapAt(tapX, tapY);
+  }
+
+  _tapAt(x, y) {
+    if (this.finished) return;
     let hit = false;
     for (let i = this.balloons.length - 1; i >= 0; i--) {
       const b = this.balloons[i];
-      const dx = tapX - b.x;
-      const dy = tapY - b.y;
+      const dx = x - b.x;
+      const dy = y - b.y;
       if (dx * dx + dy * dy <= (b.r + 10) * (b.r + 10)) {
         this._burst(b);
         this.score += b.pts;

@@ -39,7 +39,6 @@ class ReflexBlaster {
       { fill:'#9B59B6', stroke:'#6C3483', name:'Purple' },
     ];
 
-    this._bind();
   }
 
   _bind() {
@@ -56,11 +55,13 @@ class ReflexBlaster {
         cx = (e.clientX - rect.left) * scaleX;
         cy = (e.clientY - rect.top)  * scaleY;
       }
-      if (!this.gameOver) this._checkHit(cx, cy);
+      this._tapAt(cx, cy);
     };
     this.canvas.addEventListener('click', this._onTap);
     this.canvas.addEventListener('touchstart', this._onTap, { passive: false });
   }
+
+  _tapAt(x, y) { if (!this.gameOver) this._checkHit(x, y); }
 
   _spawnTarget() {
     const margin = 60;
@@ -107,6 +108,7 @@ class ReflexBlaster {
   }
 
   start() {
+    this._bind();
     this.startTime = Date.now();
     this._spawnTarget();
     this._loop();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<meta name="theme-color" content="#0B0F14"/>
+<meta name="theme-color" content="#080C11"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="description" content="Stick Rush — The ultimate stickman party game for kids in Ghana! Play mini-games, answer questions and earn your YIN code."/>
@@ -49,6 +49,9 @@
     </button>
     <button class="btn btn-dark btn-full" onclick="showAbout()">
       ℹ️ HOW TO PLAY
+    </button>
+    <button class="btn btn-dark btn-full" onclick="goSettings()">
+      ⚙️ SETTINGS
     </button>
     <div style="text-align:center;color:#444;font-size:11px;padding-top:8px;">
       Round 1 FREE • Round 2+ = GHS 5 each<br/>
@@ -153,10 +156,12 @@
 </div>
 
 <!-- ══════════════════ MG RESULT ═════════════════ -->
-<div id="screen-mg-result" class="screen" style="align-items:center;justify-content:center;padding:32px 24px;">
-  <div class="mgr-card">
-    <div id="mgr-title" style="font-size:32px;font-weight:900;margin-bottom:6px;">🏆 You Won!</div>
+<canvas id="mgr-confetti"></canvas>
+<div id="screen-mg-result" class="screen" style="align-items:center;justify-content:center;padding:32px 20px;">
+  <div class="mgr-card" style="width:100%;max-width:380px;">
+    <div id="mgr-title" style="font-size:30px;font-weight:900;margin-bottom:6px;">🏆 You Won!</div>
     <div id="mgr-game" style="color:var(--muted);font-size:14px;margin-bottom:14px;"></div>
+    <canvas id="mgr-podium" width="340" height="180"></canvas>
     <div id="mgr-score" style="font-size:44px;font-weight:900;color:var(--gold);"></div>
     <div id="mgr-player" style="color:var(--gold);font-size:13px;font-weight:700;margin-top:4px;"></div>
     <div id="mgr-total" style="color:rgba(255,255,255,0.4);font-size:13px;margin:8px 0 22px;"></div>
@@ -336,40 +341,49 @@
 </div>
 
 <!-- ══════════════════ PLAYER COUNT ══════════════ -->
-<div id="screen-player-count" class="screen" style="align-items:center;justify-content:center;text-align:center;padding:40px 24px;">
-  <div style="max-width:340px;width:100%;">
-    <button class="back-btn" style="margin-bottom:20px;" onclick="goMenu()">← Back</button>
-    <h2 style="font-size:26px;font-weight:900;color:var(--gold);margin-bottom:8px;">How Many Players?</h2>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:28px;">Up to 4 players can take turns on one device!</p>
+<div id="screen-player-count" class="screen" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="padding:36px 20px 40px;max-width:400px;width:100%;">
+    <button class="back-btn" style="margin-bottom:20px;" onclick="Audio.playClick();goMenu()">← Back</button>
+    <div style="font-size:11px;color:#F1C40F;letter-spacing:4px;font-weight:800;text-transform:uppercase;margin-bottom:8px;">STICK RUSH</div>
+    <h2 style="font-size:28px;font-weight:900;margin-bottom:6px;">How Many Players?</h2>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:28px;">All play at the same time on one device!</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-      <button class="btn btn-gold" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(1)">
-        1<br/><span style="font-size:13px;font-weight:600;">Solo</span>
+      <button class="pc-option-card" style="--pc-col:#F1C40F" onclick="Audio.playClick();startSetup(1)">
+        <canvas id="pc-cv-1" width="80" height="100" style="border-radius:10px;"></canvas>
+        <div class="pc-num">1</div><div class="pc-label">Solo</div>
       </button>
-      <button class="btn btn-blue" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(2)">
-        2<br/><span style="font-size:13px;font-weight:600;">Duo</span>
+      <button class="pc-option-card" style="--pc-col:#3498DB" onclick="Audio.playClick();startSetup(2)">
+        <canvas id="pc-cv-2" width="80" height="100" style="border-radius:10px;"></canvas>
+        <div class="pc-num">2</div><div class="pc-label">Duo</div>
       </button>
-      <button class="btn btn-blue" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(3)">
-        3<br/><span style="font-size:13px;font-weight:600;">Trio</span>
+      <button class="pc-option-card" style="--pc-col:#2ECC71" onclick="Audio.playClick();startSetup(3)">
+        <canvas id="pc-cv-3" width="80" height="100" style="border-radius:10px;"></canvas>
+        <div class="pc-num">3</div><div class="pc-label">Trio</div>
       </button>
-      <button class="btn btn-blue" style="font-size:32px;padding:28px;border-radius:18px;" onclick="startSetup(4)">
-        4<br/><span style="font-size:13px;font-weight:600;">Squad</span>
+      <button class="pc-option-card" style="--pc-col:#9B59B6" onclick="Audio.playClick();startSetup(4)">
+        <canvas id="pc-cv-4" width="80" height="100" style="border-radius:10px;"></canvas>
+        <div class="pc-num">4</div><div class="pc-label">Squad</div>
       </button>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════ MULTIPLAYER SETUP ═════════ -->
-<div id="screen-mp-setup" class="screen">
+<div id="screen-mp-setup" class="screen" style="overflow-y:auto;">
   <div style="padding:0 20px;max-width:480px;width:100%;margin:0 auto;">
-    <div style="padding-top:24px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
-      <button class="back-btn" onclick="goPlayerCount()">← Back</button>
-      <h2 style="font-size:20px;font-weight:900;margin:0;">Player Setup</h2>
+    <div style="padding-top:24px;margin-bottom:6px;display:flex;align-items:center;gap:12px;">
+      <button class="back-btn" onclick="Audio.playClick();goPlayerCount()">← Back</button>
+      <div>
+        <div style="font-size:10px;color:#F1C40F;letter-spacing:3px;font-weight:800;text-transform:uppercase;">STICK RUSH MULTIPLAYER</div>
+        <h2 style="font-size:20px;font-weight:900;margin:0;">Player Setup</h2>
+      </div>
     </div>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:18px;">Customize each player, then tap Start!</p>
     <div id="mp-players-container"></div>
     <button class="btn btn-gold btn-full" style="font-size:18px;padding:18px;margin-top:8px;" onclick="saveMultiplayerAndPlay()">
       ⚡ START GAME!
     </button>
-    <div style="height:32px;"></div>
+    <div style="height:40px;"></div>
   </div>
 </div>
 
@@ -392,18 +406,84 @@
 
 <!-- ══════════════════ MULTIPLAYER RESULTS ═══════ -->
 <div id="screen-mp-results" class="screen">
-  <div style="padding:24px 20px;max-width:480px;width:100%;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:40px;margin-bottom:8px;">🏆</div>
-      <h2 style="font-size:26px;font-weight:900;color:var(--gold);margin:0;">Final Results!</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:4px;">Round Complete — Here's the Ranking</p>
+  <canvas id="mpr-confetti"></canvas>
+  <div style="padding:28px 20px 0;max-width:480px;width:100%;margin:0 auto;position:relative;z-index:10;overflow-y:auto;flex:1;">
+    <!-- Winner Hero -->
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="font-size:11px;color:#F1C40F;letter-spacing:4px;font-weight:800;text-transform:uppercase;margin-bottom:6px;">WINNER</div>
+      <div id="mpr-winner-name" style="font-size:32px;font-weight:900;color:#F1C40F;margin-bottom:10px;">Player 1</div>
+      <canvas id="mpr-hero" width="110" height="150"></canvas>
+      <div style="font-size:44px;margin-top:6px;">🏆</div>
     </div>
+    <!-- Rankings -->
     <div id="mp-results-list"></div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;">
-      <button class="btn btn-gold btn-full" onclick="Audio.playClick();goPlayerCount();">🔄 Play Again</button>
-      <button class="btn btn-dark btn-full" onclick="Audio.playClick();showLeaderboard();">🏆 Leaderboard</button>
-      <button class="btn btn-dark btn-full" onclick="Audio.playClick();goMenu();">🏠 Menu</button>
+    <!-- Action buttons (populated by JS) -->
+    <div id="mpr-actions" style="display:flex;flex-direction:column;gap:10px;margin-top:20px;"></div>
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ SETTINGS ══════════════════ -->
+<div id="screen-settings" class="screen" style="overflow-y:auto;">
+  <div style="padding:0 20px;max-width:480px;width:100%;margin:0 auto;">
+    <div style="padding-top:24px;margin-bottom:22px;display:flex;align-items:center;gap:12px;">
+      <button class="back-btn" onclick="Audio.playClick();goMenu();">← Back</button>
+      <h2 style="font-size:20px;font-weight:900;margin:0;">⚙️ Settings</h2>
     </div>
+
+    <!-- Voice picker -->
+    <div class="setup-section">
+      <h3 style="margin-bottom:4px;">🎙️ Speaking Voice</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Select the announcer voice. Only English voices are shown.</p>
+      <div id="settings-voice-list"></div>
+      <button class="btn btn-blue btn-full" style="margin-top:12px;" onclick="testVoice()">
+        🔊 Test Selected Voice
+      </button>
+    </div>
+
+    <!-- Audio toggle -->
+    <div class="setup-section">
+      <h3 style="margin-bottom:12px;">🔊 Audio</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;
+                  background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+        <div>
+          <div style="font-weight:700;font-size:15px;">Sound &amp; Voice</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">Toggle all game audio</div>
+        </div>
+        <button id="settings-audio-btn" class="btn btn-dark" style="padding:8px 20px;font-size:14px;"
+          onclick="toggleAudioSetting()">🔊 On</button>
+      </div>
+    </div>
+
+    <!-- Orientation picker -->
+    <div class="setup-section">
+      <h3 style="margin-bottom:4px;">📱 Screen Orientation</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Choose how the game fills your screen.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <button id="orient-portrait" onclick="setOrientation('portrait')"
+          style="padding:16px 6px;border-radius:14px;border:2px solid rgba(255,255,255,0.1);
+                 background:rgba(255,255,255,0.04);font-size:13px;font-weight:700;
+                 color:#aaa;cursor:pointer;transition:all 0.18s;display:flex;
+                 flex-direction:column;align-items:center;gap:6px;">
+          <span style="font-size:26px;">📱</span>Portrait
+        </button>
+        <button id="orient-landscape" onclick="setOrientation('landscape')"
+          style="padding:16px 6px;border-radius:14px;border:2px solid rgba(255,255,255,0.1);
+                 background:rgba(255,255,255,0.04);font-size:13px;font-weight:700;
+                 color:#aaa;cursor:pointer;transition:all 0.18s;display:flex;
+                 flex-direction:column;align-items:center;gap:6px;">
+          <span style="font-size:26px;">🖥️</span>Landscape
+        </button>
+        <button id="orient-auto" onclick="setOrientation('auto')"
+          style="padding:16px 6px;border-radius:14px;border:2px solid rgba(255,255,255,0.1);
+                 background:rgba(255,255,255,0.04);font-size:13px;font-weight:700;
+                 color:#aaa;cursor:pointer;transition:all 0.18s;display:flex;
+                 flex-direction:column;align-items:center;gap:6px;">
+          <span style="font-size:26px;">🔄</span>Auto
+        </button>
+      </div>
+    </div>
+
     <div style="height:32px;"></div>
   </div>
 </div>
@@ -420,6 +500,8 @@
 <script src="js/games/mathdash.js"></script>
 <script src="js/games/memorymatch.js"></script>
 <script src="js/games/rhythmtap.js"></script>
+<script src="js/games/whackmole.js"></script>
+<script src="js/games/coinrush.js"></script>
 <script src="js/game.js"></script>
 
 <script>
@@ -458,18 +540,32 @@ function handlePayment(provider) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let f = 0;
-  const costumes = ['default','redathlete','bluestar','ninjastrike','blazerunner'];
-  const positions = [0.1, 0.3, 0.5, 0.7, 0.9];
+  const costumes = ['default','redathlete','bluestar','ninjastrike','blazerunner','greenrunner','purpleace'];
+  const positions = [0.05, 0.22, 0.42, 0.62, 0.78, 0.92];
   function draw() {
     const W = canvas.width  = canvas.offsetWidth  || 360;
     const H = canvas.height = canvas.offsetHeight || 180;
     ctx.clearRect(0,0,W,H);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle = '#1E2A36'; ctx.fillRect(0,H-20,W,20);
-    ctx.fillStyle = '#F1C40F'; ctx.fillRect(0,H-20,W,2);
+
+    // Background gradient
+    const bg = ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'rgba(0,0,0,0)'); bg.addColorStop(1,'rgba(0,0,0,0.55)');
+    ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+    // Ground
+    ctx.fillStyle = '#1A2535'; ctx.fillRect(0,H-22,W,22);
+    // Gold line
+    const lineGrad = ctx.createLinearGradient(0,H-22,W,H-22);
+    lineGrad.addColorStop(0,'transparent');
+    lineGrad.addColorStop(0.3,'rgba(241,196,15,0.8)');
+    lineGrad.addColorStop(0.7,'rgba(241,196,15,0.8)');
+    lineGrad.addColorStop(1,'transparent');
+    ctx.fillStyle = lineGrad; ctx.fillRect(0,H-22,W,2.5);
+
     positions.forEach((p,i) => {
-      const x = (((p * W + f * (1 + i * 0.2)) % (W + 80)) - 40);
-      drawStickman(ctx, x, H-20, costumes[i], { scale:0.72, running:true, frame:f+i*12 });
+      const bob = Math.sin((f + i*25)*0.07)*3;
+      const x = (((p * W + f * (1 + i * 0.18)) % (W + 90)) - 45);
+      drawStickman(ctx, x, H-22+bob, costumes[i % costumes.length], { scale:0.74, running:true, frame:f+i*14 });
     });
     f++;
     requestAnimationFrame(draw);

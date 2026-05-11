@@ -320,10 +320,15 @@ class MathDash {
       tapY = (e.clientY - rect.top)  * scaleY;
     }
 
-    const { pad, btnW, btnH, y } = this.buttonMeta;
+    this._tapAt(tapX, tapY);
+  }
+
+  _tapAt(x, y) {
+    if (this.finished || !this.currentQ) return;
+    const { pad, btnW, btnH, y: btnY } = this.buttonMeta;
     this.currentQ.options.forEach((opt, i) => {
       const bx = pad + i * (btnW + pad);
-      if (tapX >= bx && tapX <= bx + btnW && tapY >= y && tapY <= y + btnH) {
+      if (x >= bx && x <= bx + btnW && y >= btnY && y <= btnY + btnH) {
         if (opt === this.currentQ.answer) {
           this.playerPos = Math.min(this.TRACK_LENGTH, this.playerPos + this.QUESTION_ADVANCE_PLAYER);
           this.score += 100;

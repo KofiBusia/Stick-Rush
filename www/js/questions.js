@@ -126,12 +126,13 @@ const _usedQuestions = { tier1: new Set(), tier2: new Set(), tier3: new Set() };
 
 function getQuestions(tier, count) {
   const bank = QUESTION_BANK[tier] || QUESTION_BANK.tier1;
-  const used = _usedQuestions[tier] || new Set();
+  let used = _usedQuestions[tier] || new Set();
 
   // If we've used most questions, reset
   let available = bank.filter((_, i) => !used.has(i));
   if (available.length < count) {
-    _usedQuestions[tier] = new Set();
+    used = new Set();
+    _usedQuestions[tier] = used;
     available = [...bank];
   }
 
