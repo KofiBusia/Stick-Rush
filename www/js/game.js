@@ -1196,105 +1196,117 @@ function renderVoiceList() {
   if (!container) return;
   container.innerHTML = '';
 
-  const allVoices = (Audio.voices || []).filter(v => v.lang.startsWith('en'));
+  const allVoices = (Audio.voices || []).filter(function(v) { return v.lang.startsWith('en'); });
   if (!allVoices.length) {
     container.innerHTML = '<p style="color:#888;font-size:13px;padding:8px 0;">Loading voices…</p>';
-    setTimeout(renderVoiceList, 700);
+    setTimeout(renderVoiceList, 800);
     return;
   }
 
   const used = new Set();
-  function langMatch(voiceLang, target) {
-    return voiceLang.toLowerCase().startsWith(target.toLowerCase());
-  }
+  function langMatch(vl, t) { return vl.toLowerCase().startsWith(t.toLowerCase()); }
   function matchVoice(langs, hints) {
-    for (const lang of langs) {
-      for (const hint of hints) {
-        const v = allVoices.find(v => !used.has(v.name) && langMatch(v.lang, lang) && v.name.toLowerCase().includes(hint));
+    for (var i = 0; i < langs.length; i++) {
+      for (var j = 0; j < hints.length; j++) {
+        var v = allVoices.find(function(v) { return !used.has(v.name) && langMatch(v.lang, langs[i]) && v.name.toLowerCase().indexOf(hints[j]) >= 0; });
         if (v) return v;
       }
     }
-    for (const lang of langs) {
-      const v = allVoices.find(v => !used.has(v.name) && langMatch(v.lang, lang) && v.localService);
+    for (var i = 0; i < langs.length; i++) {
+      var v = allVoices.find(function(v) { return !used.has(v.name) && langMatch(v.lang, langs[i]) && v.localService; });
       if (v) return v;
     }
-    for (const lang of langs) {
-      const v = allVoices.find(v => !used.has(v.name) && langMatch(v.lang, lang));
+    for (var i = 0; i < langs.length; i++) {
+      var v = allVoices.find(function(v) { return !used.has(v.name) && langMatch(v.lang, langs[i]); });
       if (v) return v;
     }
-    const generic = new Set(['female','male']);
-    for (const hint of hints) {
-      if (generic.has(hint)) continue;
-      const v = allVoices.find(v => !used.has(v.name) && v.name.toLowerCase().includes(hint));
+    var generic = ['female', 'male'];
+    for (var j = 0; j < hints.length; j++) {
+      if (generic.indexOf(hints[j]) >= 0) continue;
+      var v = allVoices.find(function(v) { return !used.has(v.name) && v.name.toLowerCase().indexOf(hints[j]) >= 0; });
       if (v) return v;
     }
     return null;
   }
 
-  const matched = [];
-  CURATED_VOICES.forEach(slot => {
-    const voice = matchVoice(slot.langs, slot.hints);
+  var matched = [];
+  CURATED_VOICES.forEach(function(slot) {
+    var voice = matchVoice(slot.langs, slot.hints);
     if (voice) used.add(voice.name);
-    matched.push({ slot, voice });
+    matched.push({ slot: slot, voice: voice });
   });
 
-  // Fallback: if locale matching found nothing, list raw voices
-  const anyMatched = matched.some(function(m) { return m.voice; });
-  const rows = anyMatched
+  var anyMatched = matched.some(function(m) { return !!m.voice; });
+  var rows = anyMatched
     ? matched
     : allVoices.slice(0, 10).map(function(v) { return { slot: { flag: '🔊', label: v.name }, voice: v }; });
 
-  function makeRow(slot, voice) {
-    const isSelected = !!(voice && Audio.preferredVoice && Audio.preferredVoice.name === voice.name);
-    const available  = !!voice;
+  // Build rows first so click handlers can reference allLabels via closure
+  var allLabels = [];
 
-    const label = document.createElement('label');
-    const border = isSelected ? '#F1C40F' : 'rgba(255,255,255,0.08)';
-    const bg     = isSelected ? 'rgba(241,196,15,0.07)' : 'rgba(255,255,255,0.03)';
-    label.style.cssText = 'display:flex;align-items:center;gap:12px;padding:11px 14px;' +
-      'border-radius:12px;border:1.5px solid ' + border + ';background:' + bg + ';' +
-      'cursor:' + (available ? 'pointer' : 'default') + ';margin-bottom:8px;' +
-      'opacity:' + (available ? '1' : '0.32') + ';';
+  rows.forEach(function(r) {
+    var slot = r.slot;
+    var voice = r.voice;
+    var available = !!voice;
+    var isSelected = !!(voice && Audio.preferredVoice && Audio.preferredVoice.name === voice.name);
 
-    const input = document.createElement('input');
-    input.type     = 'radio';
-    input.name     = 'voice-pick';
-    input.checked  = isSelected;
-    input.disabled = !available;
-    input.style.cssText = 'accent-color:#F1C40F;width:16px;height:16px;flex-shrink:0;';
-    if (voice) {
-      const voiceName = voice.name;
-      input.addEventListener('change', function() {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:11px 14px;' +
+      'border-radius:12px;margin-bottom:8px;' +
+      'border:1.5px solid ' + (isSelected ? '#F1C40F' : 'rgba(255,255,255,0.08)') + ';' +
+      'background:' + (isSelected ? 'rgba(241,196,15,0.07)' : 'rgba(255,255,255,0.03)') + ';' +
+      'opacity:' + (available ? '1' : '0.32') + ';' +
+      'cursor:' + (available ? 'pointer' : 'default') + ';' +
+      '-webkit-tap-highlight-color:rgba(0,0,0,0);user-select:none;';
+    if (voice) row.dataset.voiceName = voice.name;
+
+    // Custom radio circle
+    var circle = document.createElement('div');
+    circle.style.cssText = 'width:18px;height:18px;border-radius:50%;flex-shrink:0;border:2px solid ' +
+      (isSelected ? '#F1C40F' : 'rgba(255,255,255,0.3)') + ';display:flex;align-items:center;justify-content:center;';
+    if (isSelected) {
+      var dot = document.createElement('div');
+      dot.className = 'vdot';
+      dot.style.cssText = 'width:9px;height:9px;border-radius:50%;background:#F1C40F;';
+      circle.appendChild(dot);
+    }
+    row.dataset.circle = '';
+    row._circle = circle;
+
+    var info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    var nameEl = document.createElement('div');
+    nameEl.style.cssText = 'font-weight:700;font-size:14px;';
+    nameEl.textContent = slot.flag + ' ' + slot.label;
+    var subEl = document.createElement('div');
+    subEl.style.cssText = 'font-size:11px;color:#666;';
+    subEl.textContent = available
+      ? (voice.name + (voice.localService ? ' · Local' : ' · Network'))
+      : 'Not on this device';
+    info.appendChild(nameEl);
+    info.appendChild(subEl);
+
+    row.appendChild(circle);
+    row.appendChild(info);
+    allLabels.push(row);
+
+    if (available && voice) {
+      var voiceName = voice.name;
+      row.addEventListener('click', function() {
         Audio.setVoice(voiceName);
-        renderVoiceList();
+        // Update visual state in-place — no re-render
+        allLabels.forEach(function(lbl) {
+          var sel = lbl.dataset.voiceName === voiceName;
+          lbl.style.borderColor = sel ? '#F1C40F' : 'rgba(255,255,255,0.08)';
+          lbl.style.background  = sel ? 'rgba(241,196,15,0.07)' : 'rgba(255,255,255,0.03)';
+          lbl._circle.style.borderColor = sel ? '#F1C40F' : 'rgba(255,255,255,0.3)';
+          lbl._circle.innerHTML = sel ? '<div style="width:9px;height:9px;border-radius:50%;background:#F1C40F;"></div>' : '';
+        });
       });
     }
 
-    const info = document.createElement('div');
-    info.style.cssText = 'flex:1;min-width:0;';
-    const nameDiv = document.createElement('div');
-    nameDiv.style.cssText = 'font-weight:700;font-size:14px;';
-    nameDiv.textContent = slot.flag + ' ' + slot.label;
-    const subDiv = document.createElement('div');
-    subDiv.style.cssText = 'font-size:11px;color:#666;';
-    subDiv.textContent = available
-      ? voice.name + (voice.localService ? ' · Local' : ' · Network')
-      : 'Not on this device';
-    info.appendChild(nameDiv);
-    info.appendChild(subDiv);
-
-    label.appendChild(input);
-    label.appendChild(info);
-    if (isSelected) {
-      const check = document.createElement('span');
-      check.style.cssText = 'color:#F1C40F;font-size:18px;';
-      check.textContent = '✓';
-      label.appendChild(check);
-    }
-    return label;
-  }
-
-  rows.forEach(function(r) { container.appendChild(makeRow(r.slot, r.voice)); });
+    container.appendChild(row);
+  });
 }
 function testVoice() {
   Audio.speak("Hello! I am your Stick Rush announcer. Let the games begin!", 0.9, 1.0);
