@@ -12,10 +12,10 @@ const COSTUME_TIERS = {
 
 const COSTUMES = {
   // ── HERO PLAYERS (Ghanaian names, always unlocked) ─────
-  kofi:         { id:'kofi',         name:'Kofi',             tier:'Common',    body:'#E74C3C', head:'#FF6347', accent:'#FFD700', unlockReq:'Always unlocked',        glow:'#FF6347',  extras:[], hair:'spiky'      },
-  ama:          { id:'ama',          name:'Ama',              tier:'Common',    body:'#00BFFF', head:'#87CEEB', accent:'#E0F7FF', unlockReq:'Always unlocked',        glow:'#00BFFF',  extras:[], hair:'ponytail'   },
-  kwame:        { id:'kwame',        name:'Kwame',            tier:'Common',    body:'#2ECC71', head:'#55FF99', accent:'#006633', unlockReq:'Always unlocked',        glow:'#2ECC71',  extras:[], hair:'afro'       },
-  abena:        { id:'abena',        name:'Abena',            tier:'Common',    body:'#9B59B6', head:'#DA70D6', accent:'#FFD700', unlockReq:'Always unlocked',        glow:'#DA70D6',  extras:[], hair:'crown_small' },
+  kofi:         { id:'kofi',         name:'Kofi',             tier:'Common',    body:'#E8312A', head:'#FFAA80', accent:'#FFD700', unlockReq:'Always unlocked',        glow:'#FF5533',  extras:[], hair:'spiky',       chibi:true },
+  ama:          { id:'ama',          name:'Ama',              tier:'Common',    body:'#1AA8E8', head:'#AADEFF', accent:'#FF88CC', unlockReq:'Always unlocked',        glow:'#44CCFF',  extras:[], hair:'ponytail',    chibi:true },
+  kwame:        { id:'kwame',        name:'Kwame',            tier:'Common',    body:'#22C45A', head:'#AAFFCC', accent:'#FFEE44', unlockReq:'Always unlocked',        glow:'#44FF88',  extras:[], hair:'afro',        chibi:true },
+  abena:        { id:'abena',        name:'Abena',            tier:'Common',    body:'#A044CC', head:'#EEBEFF', accent:'#FFD700', unlockReq:'Always unlocked',        glow:'#CC66FF',  extras:[], hair:'crown_small',  chibi:true },
   // ── CLASSIC ────────────────────────────────────────────
   default:      { id:'default',      name:'Classic Runner',   tier:'Common',    body:'#F1C40F', head:'#F1C40F', accent:'#D4AC0D', unlockReq:'Always unlocked',        glow:null,       extras:[], hair:null        },
   redathlete:   { id:'redathlete',   name:'Red Athlete',      tier:'Common',    body:'#E74C3C', head:'#E74C3C', accent:'#922B21', unlockReq:'Always unlocked',        glow:null,       extras:[], hair:null        },
@@ -56,11 +56,19 @@ function drawStickman(ctx, cx, cy, costumeIdOrObj, opts = {}) {
 
   ctx.save();
 
-  // Body measurements — world-class proportions
-  const headR   = 17  * scale;
-  const bodyLen = 30  * scale;
-  const legLen  = 26  * scale;
-  const armLen  = 22  * scale;
+  // Hero characters use their own full cartoon renderer
+  if (c.chibi) {
+    _drawHeroFull(ctx, cx, cy, c, opts);
+    ctx.restore();
+    return;
+  }
+
+  // Body measurements
+  const isHero  = false;
+  const headR   = (isHero ? 21  : 17) * scale;
+  const bodyLen = (isHero ? 25  : 30) * scale;
+  const legLen  = (isHero ? 23  : 26) * scale;
+  const armLen  = (isHero ? 20  : 22) * scale;
   const lw      = Math.max(2.5, 4 * scale);
 
   // Animation
@@ -174,28 +182,62 @@ function drawStickman(ctx, cx, cy, costumeIdOrObj, opts = {}) {
   ctx.lineTo(cx + browX + headR * 0.15, browY + browAngle * headR * 0.35);
   ctx.stroke();
 
-  // Eyes — sclera + iris + pupil + catchlight
-  const eyeY = headY + headR * 0.02;
-  const eyeX = headR * 0.32;
-  const eyeR = headR * 0.22;
+  // Eyes — chibi heroes get big cartoon eyes
+  const eyeY = headY + headR * (isHero ? -0.02 : 0.02);
+  const eyeX = headR * (isHero ? 0.34 : 0.32);
+  const eyeR = headR * (isHero ? 0.29 : 0.22);
   [[cx - eyeX, eyeY],[cx + eyeX, eyeY]].forEach(([ex, ey]) => {
     ctx.beginPath(); ctx.arc(ex, ey, eyeR, 0, Math.PI * 2);
     ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.strokeStyle = darken(c.head, 28); ctx.lineWidth = 0.9 * scale; ctx.stroke();
-    ctx.beginPath(); ctx.arc(ex + eyeR * 0.14, ey + eyeR * 0.1, eyeR * 0.62, 0, Math.PI * 2);
-    ctx.fillStyle = c.accent; ctx.fill();
-    ctx.beginPath(); ctx.arc(ex + eyeR * 0.16, ey + eyeR * 0.12, eyeR * 0.38, 0, Math.PI * 2);
-    ctx.fillStyle = '#111'; ctx.fill();
-    ctx.beginPath(); ctx.arc(ex - eyeR * 0.04, ey - eyeR * 0.18, eyeR * 0.18, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.88)'; ctx.fill();
+    ctx.strokeStyle = '#222'; ctx.lineWidth = (isHero ? 1.5 : 0.9) * scale; ctx.stroke();
+    if (isHero) {
+      // Thick top eyelash
+      ctx.beginPath();
+      ctx.arc(ex, ey - eyeR * 0.04, eyeR * 0.94, Math.PI + 0.28, -0.28);
+      ctx.strokeStyle = '#222'; ctx.lineWidth = scale * 2.4; ctx.lineCap = 'round'; ctx.stroke();
+      // Big coloured iris
+      ctx.beginPath(); ctx.arc(ex + eyeR * 0.08, ey + eyeR * 0.06, eyeR * 0.70, 0, Math.PI * 2);
+      ctx.fillStyle = c.accent; ctx.fill();
+      // Pupil
+      ctx.beginPath(); ctx.arc(ex + eyeR * 0.10, ey + eyeR * 0.08, eyeR * 0.42, 0, Math.PI * 2);
+      ctx.fillStyle = '#111'; ctx.fill();
+      // Big highlight
+      ctx.beginPath(); ctx.arc(ex - eyeR * 0.10, ey - eyeR * 0.20, eyeR * 0.26, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.fill();
+      // Small sparkle dot
+      ctx.beginPath(); ctx.arc(ex + eyeR * 0.24, ey + eyeR * 0.04, eyeR * 0.13, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.80)'; ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(ex + eyeR * 0.14, ey + eyeR * 0.1, eyeR * 0.62, 0, Math.PI * 2);
+      ctx.fillStyle = c.accent; ctx.fill();
+      ctx.beginPath(); ctx.arc(ex + eyeR * 0.16, ey + eyeR * 0.12, eyeR * 0.38, 0, Math.PI * 2);
+      ctx.fillStyle = '#111'; ctx.fill();
+      ctx.beginPath(); ctx.arc(ex - eyeR * 0.04, ey - eyeR * 0.18, eyeR * 0.18, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.88)'; ctx.fill();
+    }
   });
 
-  // Mouth — state-dependent
-  const mouthY = headY + headR * 0.44;
-  if (jumping) {
+  // Mouth — chibi heroes always have a big happy smile
+  const mouthY = headY + headR * (isHero ? 0.46 : 0.44);
+  if (jumping && !isHero) {
     ctx.beginPath();
     ctx.ellipse(cx, mouthY, headR * 0.14, headR * 0.19, 0, 0, Math.PI * 2);
     ctx.fillStyle = darken(c.head, 60); ctx.fill();
+  } else if (isHero) {
+    // Big curved smile
+    const smileR = headR * 0.34;
+    ctx.beginPath();
+    ctx.arc(cx, mouthY - headR * 0.08, smileR, 0.18, Math.PI - 0.18);
+    ctx.strokeStyle = darken(c.head, 60);
+    ctx.lineWidth = lw * 0.68; ctx.lineCap = 'round'; ctx.stroke();
+    // Cheek blush marks
+    ctx.save();
+    ctx.globalAlpha = 0.38;
+    ctx.fillStyle = '#FF7FAB';
+    const bx = headR * 0.54, by = headY + headR * 0.26;
+    ctx.beginPath(); ctx.ellipse(cx - bx, by, headR * 0.21, headR * 0.13, -0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + bx, by, headR * 0.21, headR * 0.13,  0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
   } else {
     ctx.beginPath();
     ctx.arc(cx, mouthY - headR * 0.1, headR * 0.28, 0.22, Math.PI - 0.22);
@@ -215,107 +257,315 @@ function drawStickman(ctx, cx, cy, costumeIdOrObj, opts = {}) {
   ctx.restore();
 }
 
+// ── FULL CARTOON HERO RENDERER ────────────────────────────
+function _drawHeroFull(ctx, cx, cy, c, opts) {
+  var s       = opts.scale   || 1;
+  var frame   = opts.frame   || 0;
+  var running = opts.running !== false;
+  var jumping = opts.jumping || false;
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  var t      = frame * 0.18;
+  var stride = running ? Math.sin(t) : 0;
+  var bob    = running ? Math.abs(Math.sin(t * 2)) * 2.5 * s : (jumping ? -10 * s : 0);
+
+  // Flat-design athletic proportions
+  var headR  = 18 * s;
+  var torsoH = 23 * s;
+  var torsoW = 18 * s;
+  var legH   = 27 * s;
+  var legW   = 11 * s;
+  var armH   = 19 * s;
+  var armW   =  9 * s;
+  var shH    =  7 * s;
+  var shW    = 15 * s;
+  var sockH  =  5 * s;
+  var neckH  =  4 * s;
+
+  var shY  = cy - shH;
+  var hipY = shY - legH;
+  var torY = hipY - torsoH;
+  var nkY  = torY - neckH;
+  var hdY  = nkY - headR + bob;
+
+  var SKINS  = { kofi:'#8B5233', ama:'#C27A45', kwame:'#5A2D0C', abena:'#8B4513' };
+  var PANTS  = { kofi:'#1A237E', ama:'#880E4F', kwame:'#1B5E20', abena:'#4A148C' };
+  var SOCKS  = { kofi:'#FFFFFF', ama:'#FFFFFF', kwame:'#FFEE44', abena:'#FFD700'  };
+  var SHOES  = { kofi:'#263238', ama:'#1A0020', kwame:'#1B2400', abena:'#120030'  };
+  var skin    = SKINS[c.id] || '#8B5233';
+  var pants   = PANTS[c.id] || darken(c.body, 30);
+  var sockCol = SOCKS[c.id] || '#FFFFFF';
+  var shoeCol = SHOES[c.id] || '#263238';
+
+  var legOff  = stride * 13 * s;
+  var legLift = Math.abs(stride) * 6 * s;
+  var armOff  = stride * 9  * s;
+
+  var fLX = cx - legW * 0.6 - legOff;
+  var bLX = cx - legW * 0.6 + legOff;
+  var fAY = torY + 4 * s - armOff;
+  var bAY = torY + 4 * s + armOff;
+
+  function rr(x, y, w, h, r, fill, stroke, sw) {
+    r = Math.min(r, Math.min(w, h) / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y,   x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x,   y + h, r);
+    ctx.arcTo(x,     y + h, x,   y,     r);
+    ctx.arcTo(x,     y,     x + w, y,   r);
+    ctx.closePath();
+    if (fill)   { ctx.fillStyle   = fill;   ctx.fill(); }
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = sw || s; ctx.stroke(); }
+  }
+
+  // Speed lines
+  if (running) {
+    var lbX = cx - torsoW * 0.8;
+    var lines = [
+      { y: torY + torsoH * 0.18, w: 30 * s, h: 4   * s },
+      { y: torY + torsoH * 0.40, w: 46 * s, h: 4.5 * s },
+      { y: torY + torsoH * 0.62, w: 34 * s, h: 4   * s },
+      { y: hipY + legH   * 0.22, w: 24 * s, h: 3   * s },
+      { y: hipY + legH   * 0.55, w: 32 * s, h: 3.5 * s },
+    ];
+    ctx.save();
+    lines.forEach(function(ln) {
+      ctx.globalAlpha = 0.16;
+      rr(lbX - ln.w, ln.y - ln.h / 2, ln.w, ln.h, ln.h * 0.5, '#90A4AE', null);
+    });
+    ctx.restore();
+  }
+
+  // Ground shadow
+  ctx.save(); ctx.globalAlpha = 0.10;
+  ctx.beginPath(); ctx.ellipse(cx, cy + 2 * s, 22 * s, 4 * s, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#000'; ctx.fill();
+  ctx.restore();
+
+  // Back leg + shoe (dimmed for depth)
+  ctx.save(); ctx.globalAlpha = 0.68;
+  rr(bLX, hipY, legW, legH - legLift * 0.4, 5*s, darken(pants,22), null);
+  rr(bLX + s, hipY + (legH - legLift*0.4)*0.74, legW - 2*s, sockH, 3*s, darken(sockCol,10), null);
+  rr(bLX - s, shY, shW, shH, 4*s, darken(shoeCol,25), null);
+  ctx.restore();
+
+  // Torso
+  rr(cx - torsoW / 2, torY, torsoW, torsoH, 7*s, c.body, null);
+  ctx.save(); ctx.globalAlpha = 0.20;
+  rr(cx + torsoW * 0.28, torY + torsoH * 0.14, torsoW * 0.18, torsoH * 0.72, 3*s, '#fff', null);
+  ctx.restore();
+  ctx.beginPath();
+  ctx.moveTo(cx - torsoW * 0.16, torY + 2*s);
+  ctx.lineTo(cx, torY + torsoH * 0.24);
+  ctx.lineTo(cx + torsoW * 0.16, torY + 2*s);
+  ctx.strokeStyle = darken(c.body, 32); ctx.lineWidth = 2.8*s; ctx.stroke();
+  var nums = { kofi:'1', ama:'2', kwame:'3', abena:'4' };
+  ctx.font = '900 ' + Math.round(11*s) + 'px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = darken(c.body, 42);
+  ctx.fillText(nums[c.id] || '★', cx + s, torY + torsoH * 0.56 + s);
+  ctx.fillStyle = c.accent;
+  ctx.fillText(nums[c.id] || '★', cx, torY + torsoH * 0.56);
+
+  // Back arm (dimmed)
+  ctx.save(); ctx.globalAlpha = 0.75;
+  rr(cx - torsoW/2 - armW + 1.5*s, bAY, armW, armH, 4*s, darken(c.body,14), null);
+  ctx.beginPath(); ctx.arc(cx - torsoW/2 - armW/2 + 1.5*s, bAY + armH + 4*s, 4*s, 0, Math.PI*2);
+  ctx.fillStyle = darken(skin,8); ctx.fill();
+  ctx.restore();
+
+  // Front leg + shoe
+  rr(fLX, hipY - legLift, legW, legH + legLift, 5*s, pants, null);
+  rr(fLX + s, hipY + legH*0.74, legW - 2*s, sockH, 3*s, sockCol, null);
+  rr(fLX - 2*s, shY, shW, shH, 4*s, shoeCol, null);
+  ctx.save(); ctx.globalAlpha = 0.28;
+  rr(fLX, shY + s, shW * 0.36, shH * 0.40, 2*s, '#fff', null);
+  ctx.restore();
+
+  // Neck
+  rr(cx - 4*s, nkY, 8*s, neckH + 3*s, 3*s, skin, null);
+
+  // Head
+  ctx.beginPath(); ctx.arc(cx, hdY, headR, 0, Math.PI*2);
+  ctx.fillStyle = skin; ctx.fill();
+  ctx.save(); ctx.globalAlpha = 0.15;
+  ctx.beginPath(); ctx.arc(cx - headR*0.25, hdY - headR*0.20, headR*0.52, 0, Math.PI*2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.restore();
+
+  // Front arm
+  rr(cx + torsoW/2 - 1.5*s, fAY, armW, armH, 4*s, darken(c.body,14), null);
+  ctx.beginPath(); ctx.arc(cx + torsoW/2 + armW/2 - 1.5*s, fAY + armH + 4*s, 4*s, 0, Math.PI*2);
+  ctx.fillStyle = skin; ctx.fill();
+
+  // Eyes
+  var eyeY = hdY - headR * 0.08;
+  var eyeX = headR * 0.30;
+  var eyeR = headR * 0.155;
+  [-1, 1].forEach(function(side) {
+    var ex = cx + side * eyeX;
+    ctx.beginPath(); ctx.arc(ex, eyeY, eyeR, 0, Math.PI*2);
+    ctx.fillStyle = '#1A1A2E'; ctx.fill();
+    ctx.beginPath(); ctx.arc(ex - eyeR*0.38, eyeY - eyeR*0.38, eyeR*0.38, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.88)'; ctx.fill();
+  });
+
+  // Mouth
+  var mY = hdY + headR * 0.35;
+  ctx.beginPath();
+  ctx.arc(cx, mY - headR*0.06, running ? headR*0.20 : headR*0.22, 0.12, Math.PI - 0.12);
+  ctx.strokeStyle = darken(skin, 42); ctx.lineWidth = 2*s; ctx.stroke();
+
+  // Hair
+  _drawCharacterHair(ctx, cx, hdY, headR, s, Math.max(2, 3*s), c);
+
+  ctx.restore();
+}
+
 function _drawCharacterHair(ctx, cx, headY, headR, scale, lw, c) {
   ctx.save();
-  const col = c.accent;
-  const bodyCol = c.body;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  var s = scale;
+
   switch (c.hair) {
+
+    // ── KOFI: Short dark hair with a swoosh ──────────────────
     case 'spiky': {
-      // 6 fierce spikes fanning over the top of the head
-      const spikeCount = 6;
-      for (let i = 0; i < spikeCount; i++) {
-        const ang = Math.PI * (1.05 - i * 0.21);
-        const x1 = cx + Math.cos(ang) * headR * 0.82;
-        const y1 = headY + Math.sin(ang) * headR * 0.82;
-        const len = headR * (i === 2 || i === 3 ? 1.75 : 1.45);
-        const x2 = cx + Math.cos(ang) * len;
-        const y2 = headY + Math.sin(ang) * len;
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
-        ctx.strokeStyle = i === 2 ? '#FFD700' : bodyCol;
-        ctx.lineWidth = lw * (i === 2 ? 1.1 : 0.85); ctx.lineCap = 'round'; ctx.stroke();
-        // Gold tip dot
-        ctx.beginPath(); ctx.arc(x2, y2, lw * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = i === 2 ? '#FFD700' : col; ctx.fill();
-      }
-      break;
-    }
-    case 'afro': {
-      // Big fluffy afro with texture dots
-      const afroR  = headR * 1.28;
-      const afroCY = headY - headR * 0.22;
-      const gr = ctx.createRadialGradient(cx - afroR * 0.2, afroCY - afroR * 0.3, afroR * 0.1, cx, afroCY, afroR);
-      gr.addColorStop(0, lighten(bodyCol, 35));
-      gr.addColorStop(0.5, bodyCol);
-      gr.addColorStop(1, darken(bodyCol, 25));
+      var hc = '#1A0A00';
       ctx.beginPath();
-      ctx.arc(cx, afroCY, afroR, Math.PI, 0, false);
-      ctx.fillStyle = gr; ctx.fill();
-      // Dark outline
-      ctx.beginPath(); ctx.arc(cx, afroCY, afroR, Math.PI, 0, false);
-      ctx.strokeStyle = darken(bodyCol, 40); ctx.lineWidth = scale * 1.2; ctx.stroke();
-      // Texture curls
-      ctx.fillStyle = darken(bodyCol, 30);
-      for (let i = 0; i < 8; i++) {
-        const a = Math.PI + i * (Math.PI / 7.5);
-        const tx = cx + Math.cos(a) * afroR * 0.72;
-        const ty = afroCY + Math.sin(a) * afroR * 0.72;
-        ctx.beginPath(); ctx.arc(tx, ty, 2.2 * scale, 0, Math.PI * 2); ctx.fill();
-      }
+      ctx.arc(cx, headY - headR*0.08, headR*0.96, Math.PI*1.04, 0.10, false);
+      ctx.fillStyle = hc; ctx.fill();
+      // Swoosh tuft
+      ctx.beginPath();
+      ctx.moveTo(cx - headR*0.18, headY - headR*0.85);
+      ctx.bezierCurveTo(
+        cx - headR*0.60, headY - headR*1.20,
+        cx - headR*0.40, headY - headR*1.48,
+        cx + headR*0.05, headY - headR*1.18);
+      ctx.bezierCurveTo(
+        cx + headR*0.28, headY - headR*0.96,
+        cx + headR*0.12, headY - headR*0.72,
+        cx, headY - headR*0.72);
+      ctx.fillStyle = hc; ctx.fill();
+      // Shine streak
+      ctx.save(); ctx.globalAlpha = 0.22;
+      ctx.beginPath();
+      ctx.arc(cx - headR*0.22, headY - headR*0.55, headR*0.28, Math.PI*1.1, Math.PI*1.72, false);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5*s; ctx.stroke();
+      ctx.restore();
       break;
     }
+
+    // ── AMA: High ponytail bun with accent bow ────────────────
     case 'ponytail': {
-      // Headband arc
+      var hc  = '#1A1A2E';
       ctx.beginPath();
-      ctx.arc(cx, headY, headR * 0.97, Math.PI * 1.1, Math.PI * 0.02, false);
-      ctx.strokeStyle = col; ctx.lineWidth = lw * 1.1; ctx.lineCap = 'round'; ctx.stroke();
-      // Ponytail flowing right
-      ctx.beginPath();
-      ctx.moveTo(cx + headR * 0.3, headY - headR * 0.72);
-      ctx.bezierCurveTo(
-        cx + headR * 2.4, headY - headR * 0.5,
-        cx + headR * 2.6, headY + headR * 0.4,
-        cx + headR * 2.0, headY + headR * 0.6
-      );
-      ctx.strokeStyle = lighten(col, 22); ctx.lineWidth = lw * 1.5; ctx.stroke();
-      // Inner shine
-      ctx.beginPath();
-      ctx.moveTo(cx + headR * 0.3, headY - headR * 0.72);
-      ctx.bezierCurveTo(
-        cx + headR * 2.4, headY - headR * 0.5,
-        cx + headR * 2.6, headY + headR * 0.4,
-        cx + headR * 2.0, headY + headR * 0.6
-      );
-      ctx.strokeStyle = col; ctx.lineWidth = lw * 0.7; ctx.stroke();
+      ctx.arc(cx, headY - headR*0.10, headR*0.98, Math.PI*1.02, 0.06, false);
+      ctx.fillStyle = hc; ctx.fill();
+      // Bun
+      ctx.beginPath(); ctx.arc(cx + headR*0.50, headY - headR*0.95, headR*0.36, 0, Math.PI*2);
+      ctx.fillStyle = hc; ctx.fill();
+      // Bun shine
+      ctx.save(); ctx.globalAlpha = 0.25;
+      ctx.beginPath(); ctx.arc(cx + headR*0.38, headY - headR*1.06, headR*0.16, 0, Math.PI*2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.restore();
       // Hair tie
-      ctx.beginPath(); ctx.arc(cx + headR * 2.1, headY + headR * 0.45, lw * 0.9, 0, Math.PI * 2);
-      ctx.fillStyle = '#FFD700'; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + headR*0.28, headY - headR*0.70, headR*0.12, 0, Math.PI*2);
+      ctx.fillStyle = c.accent; ctx.fill();
+      // Bow wings
+      var bwX = cx + headR*0.50, bwY = headY - headR*1.18;
+      [-1, 1].forEach(function(side) {
+        ctx.beginPath();
+        ctx.moveTo(bwX, bwY);
+        ctx.bezierCurveTo(bwX + side*headR*0.42, bwY - headR*0.30,
+                          bwX + side*headR*0.38, bwY + headR*0.22, bwX, bwY);
+        ctx.fillStyle = c.accent; ctx.fill();
+        ctx.save(); ctx.globalAlpha = 0.28;
+        ctx.beginPath();
+        ctx.moveTo(bwX, bwY);
+        ctx.bezierCurveTo(bwX + side*headR*0.34, bwY - headR*0.20,
+                          bwX + side*headR*0.26, bwY - headR*0.02, bwX, bwY);
+        ctx.fillStyle = '#fff'; ctx.fill();
+        ctx.restore();
+      });
+      ctx.beginPath(); ctx.arc(bwX, bwY, headR*0.09, 0, Math.PI*2);
+      ctx.fillStyle = lighten(c.accent, 28); ctx.fill();
       break;
     }
+
+    // ── KWAME: Clean round afro ────────────────────────────────
+    case 'afro': {
+      var hc  = '#1A0A00';
+      var afR = headR * 1.38;
+      var aCY = headY - headR * 0.20;
+      ctx.save(); ctx.globalAlpha = 0.18;
+      ctx.beginPath(); ctx.arc(cx + 2*s, aCY + 2*s, afR*0.88, 0, Math.PI*2);
+      ctx.fillStyle = '#000'; ctx.fill();
+      ctx.restore();
+      ctx.beginPath(); ctx.arc(cx, aCY, afR*0.88, 0, Math.PI*2);
+      ctx.fillStyle = hc; ctx.fill();
+      ctx.save(); ctx.globalAlpha = 0.20;
+      ctx.beginPath(); ctx.arc(cx - afR*0.28, aCY - afR*0.28, afR*0.42, 0, Math.PI*2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.restore();
+      // Gold pick accessory
+      var pkX = cx + afR*0.60, pkY = aCY - afR*0.38;
+      ctx.lineWidth = 2.5*s; ctx.strokeStyle = '#FFD700';
+      for (var i = -1; i <= 1; i++) {
+        ctx.beginPath();
+        ctx.moveTo(pkX + i*3*s, pkY - afR*0.38);
+        ctx.lineTo(pkX + i*3*s, pkY + afR*0.22);
+        ctx.stroke();
+      }
+      break;
+    }
+
+    // ── ABENA: Royal updo + golden crown ──────────────────────
     case 'crown_small': {
-      // Tiny jewelled crown — Abena's signature
-      const cw = 15 * scale, ch = 10 * scale;
-      const topY = headY - headR - ch * 0.6;
-      // Crown body
-      ctx.fillStyle = '#FFD700';
-      ctx.strokeStyle = '#D4AC0D'; ctx.lineWidth = scale * 1.2;
+      var hc = '#2E0060';
       ctx.beginPath();
-      ctx.moveTo(cx - cw, topY + ch);
-      ctx.lineTo(cx - cw, topY);
-      ctx.lineTo(cx - cw * 0.4, topY + ch * 0.55);
-      ctx.lineTo(cx, topY - ch * 0.2);
-      ctx.lineTo(cx + cw * 0.4, topY + ch * 0.55);
-      ctx.lineTo(cx + cw, topY);
-      ctx.lineTo(cx + cw, topY + ch);
+      ctx.arc(cx, headY - headR*0.08, headR, Math.PI*1.02, 0.06, false);
+      ctx.fillStyle = hc; ctx.fill();
+      // Updo bun
+      ctx.beginPath(); ctx.arc(cx, headY - headR*1.08, headR*0.46, 0, Math.PI*2);
+      ctx.fillStyle = hc; ctx.fill();
+      ctx.save(); ctx.globalAlpha = 0.28;
+      ctx.beginPath(); ctx.arc(cx - headR*0.14, headY - headR*1.18, headR*0.20, 0, Math.PI*2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.restore();
+      // Crown
+      var crW = headR*0.84, crH = headR*0.52;
+      var crTop = headY - headR*1.48, crBot = crTop + crH;
+      var crG = ctx.createLinearGradient(cx - crW, crTop, cx + crW, crBot);
+      crG.addColorStop(0, '#FFEE88'); crG.addColorStop(0.5, '#FFD700'); crG.addColorStop(1, '#C8960C');
+      ctx.beginPath();
+      ctx.moveTo(cx - crW,       crBot);
+      ctx.lineTo(cx - crW,       crBot - crH*0.46);
+      ctx.lineTo(cx - crW*0.58,  crTop + crH*0.12);
+      ctx.lineTo(cx - crW*0.22,  crBot - crH*0.30);
+      ctx.lineTo(cx,             crTop);
+      ctx.lineTo(cx + crW*0.22,  crBot - crH*0.30);
+      ctx.lineTo(cx + crW*0.58,  crTop + crH*0.12);
+      ctx.lineTo(cx + crW,       crBot - crH*0.46);
+      ctx.lineTo(cx + crW,       crBot);
       ctx.closePath();
-      ctx.fill(); ctx.stroke();
-      // Glittering gems
-      const gemColors = ['#E74C3C', '#fff', '#9B59B6'];
-      [cx - cw * 0.5, cx, cx + cw * 0.5].forEach((gx, i) => {
-        ctx.beginPath(); ctx.arc(gx, topY + ch * 0.38, 2.8 * scale, 0, Math.PI * 2);
-        ctx.fillStyle = gemColors[i]; ctx.fill();
-        // Gem shine
-        ctx.beginPath(); ctx.arc(gx - scale, topY + ch * 0.30, scale * 0.8, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill();
+      ctx.fillStyle = crG; ctx.fill();
+      ctx.strokeStyle = '#8B6914'; ctx.lineWidth = 1.4*s; ctx.stroke();
+      // Gems
+      [{ x:cx,            y:crTop+crH*0.18, gc:'#FF44AA', r:3.8 },
+       { x:cx - crW*0.30, y:crBot-crH*0.24, gc:'#44DDFF', r:3.2 },
+       { x:cx + crW*0.30, y:crBot-crH*0.24, gc:'#88FFCC', r:3.2 }].forEach(function(gm) {
+        var gg = ctx.createRadialGradient(gm.x-gm.r*s*0.3, gm.y-gm.r*s*0.3, 0, gm.x, gm.y, gm.r*s);
+        gg.addColorStop(0, lighten(gm.gc,50)); gg.addColorStop(1, gm.gc);
+        ctx.beginPath(); ctx.arc(gm.x, gm.y, gm.r*s, 0, Math.PI*2);
+        ctx.fillStyle = gg; ctx.fill();
+        ctx.beginPath(); ctx.arc(gm.x-gm.r*s*0.30, gm.y-gm.r*s*0.30, gm.r*s*0.35, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.88)'; ctx.fill();
       });
       break;
     }
