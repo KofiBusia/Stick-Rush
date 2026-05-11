@@ -1204,19 +1204,22 @@ function renderVoiceList() {
   }
 
   const used = new Set();
+  function langMatch(voiceLang, target) {
+    return voiceLang.toLowerCase().startsWith(target.toLowerCase());
+  }
   function matchVoice(langs, hints) {
     for (const lang of langs) {
       for (const hint of hints) {
-        const v = allVoices.find(v => !used.has(v.name) && v.lang === lang && v.name.toLowerCase().includes(hint));
+        const v = allVoices.find(v => !used.has(v.name) && langMatch(v.lang, lang) && v.name.toLowerCase().includes(hint));
         if (v) return v;
       }
     }
     for (const lang of langs) {
-      const v = allVoices.find(v => !used.has(v.name) && v.lang === lang && v.localService);
+      const v = allVoices.find(v => !used.has(v.name) && langMatch(v.lang, lang) && v.localService);
       if (v) return v;
     }
     for (const lang of langs) {
-      const v = allVoices.find(v => !used.has(v.name) && v.lang === lang);
+      const v = allVoices.find(v => !used.has(v.name) && langMatch(v.lang, lang));
       if (v) return v;
     }
     const generic = new Set(['female','male']);
@@ -1228,24 +1231,35 @@ function renderVoiceList() {
     return null;
   }
 
+  const matched = [];
   CURATED_VOICES.forEach(slot => {
     const voice = matchVoice(slot.langs, slot.hints);
     if (voice) used.add(voice.name);
+    matched.push({ slot, voice });
+  });
 
-    const isSelected = !!(voice && Audio.preferredVoice?.name === voice.name);
+  // Fallback: if locale matching found nothing, list raw voices
+  const anyMatched = matched.some(function(m) { return m.voice; });
+  const rows = anyMatched
+    ? matched
+    : allVoices.slice(0, 10).map(function(v) { return { slot: { flag: '🔊', label: v.name }, voice: v }; });
+
+  function makeRow(slot, voice) {
+    const isSelected = !!(voice && Audio.preferredVoice && Audio.preferredVoice.name === voice.name);
     const available  = !!voice;
 
     const label = document.createElement('label');
-    label.style.cssText = `display:flex;align-items:center;gap:12px;padding:11px 14px;
-      border-radius:12px;border:1.5px solid ${isSelected ? '#F1C40F' : 'rgba(255,255,255,0.08)'};
-      background:${isSelected ? 'rgba(241,196,15,0.07)' : 'rgba(255,255,255,0.03)'};
-      cursor:${available ? 'pointer' : 'default'};margin-bottom:8px;
-      opacity:${available ? '1' : '0.32'};`;
+    const border = isSelected ? '#F1C40F' : 'rgba(255,255,255,0.08)';
+    const bg     = isSelected ? 'rgba(241,196,15,0.07)' : 'rgba(255,255,255,0.03)';
+    label.style.cssText = 'display:flex;align-items:center;gap:12px;padding:11px 14px;' +
+      'border-radius:12px;border:1.5px solid ' + border + ';background:' + bg + ';' +
+      'cursor:' + (available ? 'pointer' : 'default') + ';margin-bottom:8px;' +
+      'opacity:' + (available ? '1' : '0.32') + ';';
 
     const input = document.createElement('input');
-    input.type    = 'radio';
-    input.name    = 'voice-pick';
-    input.checked = isSelected;
+    input.type     = 'radio';
+    input.name     = 'voice-pick';
+    input.checked  = isSelected;
     input.disabled = !available;
     input.style.cssText = 'accent-color:#F1C40F;width:16px;height:16px;flex-shrink:0;';
     if (voice) {
@@ -1260,7 +1274,7 @@ function renderVoiceList() {
     info.style.cssText = 'flex:1;min-width:0;';
     const nameDiv = document.createElement('div');
     nameDiv.style.cssText = 'font-weight:700;font-size:14px;';
-    nameDiv.textContent = slot.flag + ' ' + slot.label;
+    nameDiv.textContent = slot.flag + ' ' + slot.label;
     const subDiv = document.createElement('div');
     subDiv.style.cssText = 'font-size:11px;color:#666;';
     subDiv.textContent = available
@@ -1277,11 +1291,11 @@ function renderVoiceList() {
       check.textContent = '✓';
       label.appendChild(check);
     }
+    return label;
+  }
 
-    container.appendChild(label);
-  });
+  rows.forEach(function(r) { container.appendChild(makeRow(r.slot, r.voice)); });
 }
-
 function testVoice() {
   Audio.speak("Hello! I am your Stick Rush announcer. Let the games begin!", 0.9, 1.0);
 }
