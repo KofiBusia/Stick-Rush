@@ -269,27 +269,30 @@ function _drawHeroFull(ctx, cx, cy, c, opts) {
 
   var t      = frame * 0.18;
   var stride = running ? Math.sin(t) : 0;
-  var bob    = running ? Math.abs(Math.sin(t * 2)) * 2.5 * s : (jumping ? -10 * s : 0);
+  var bob    = running ? Math.abs(Math.sin(t * 2)) * 2 * s : (jumping ? -9 * s : 0);
 
-  // Flat-design athletic proportions
-  var headR  = 18 * s;
-  var torsoH = 23 * s;
-  var torsoW = 18 * s;
-  var legH   = 27 * s;
-  var legW   = 11 * s;
-  var armH   = 19 * s;
-  var armW   =  9 * s;
+  // Athletic flat-design proportions
+  var headR  = 16 * s;
+  var torsoH = 22 * s;
+  var torsoW = 17 * s;
+  var thighL = 17 * s;
+  var shinL  = 15 * s;
+  var uArmL  =  9 * s;
+  var fArmL  =  9 * s;
+  var legW   = 10 * s;
+  var armW   =  6.5 * s;
   var shH    =  7 * s;
-  var shW    = 15 * s;
+  var shW    = 16 * s;
   var sockH  =  5 * s;
   var neckH  =  4 * s;
 
-  var shY  = cy - shH;
-  var hipY = shY - legH;
+  // Vertical layout (bottom = cy)
+  var hipY = cy - shH - thighL - shinL;
   var torY = hipY - torsoH;
   var nkY  = torY - neckH;
-  var hdY  = nkY - headR + bob;
+  var hdY  = nkY  - headR + bob;
 
+  // Palettes
   var SKINS  = { kofi:'#8B5233', ama:'#C27A45', kwame:'#5A2D0C', abena:'#8B4513' };
   var PANTS  = { kofi:'#1A237E', ama:'#880E4F', kwame:'#1B5E20', abena:'#4A148C' };
   var SOCKS  = { kofi:'#FFFFFF', ama:'#FFFFFF', kwame:'#FFEE44', abena:'#FFD700'  };
@@ -299,127 +302,184 @@ function _drawHeroFull(ctx, cx, cy, c, opts) {
   var sockCol = SOCKS[c.id] || '#FFFFFF';
   var shoeCol = SHOES[c.id] || '#263238';
 
-  var legOff  = stride * 13 * s;
-  var legLift = Math.abs(stride) * 6 * s;
-  var armOff  = stride * 9  * s;
+  // Shoulder attach points (slightly inside torso edges)
+  var lShlX = cx - torsoW * 0.42;
+  var rShlX = cx + torsoW * 0.42;
+  var shlY  = torY + 2 * s;
 
-  var fLX = cx - legW * 0.6 - legOff;
-  var bLX = cx - legW * 0.6 + legOff;
-  var fAY = torY + 4 * s - armOff;
-  var bAY = torY + 4 * s + armOff;
+  // ── JOINT POSITIONS — angle-based for accurate running pose ──
+  // Angles measured from +x axis (canvas: y increases downward)
+  // π/2 = straight down.  stride>0 → right leg leads.
 
-  function rr(x, y, w, h, r, fill, stroke, sw) {
+  // Front (leading) leg — thigh kicks forward, shin hangs back-down
+  var fTAng = Math.PI / 2 - stride * 0.90;
+  var fKX   = cx        + thighL * Math.cos(fTAng);
+  var fKY   = hipY      + thighL * Math.sin(fTAng);
+  var fSAng = Math.PI / 2 + stride * 0.22;
+  var fAX   = fKX + shinL * Math.cos(fSAng);
+  var fAY   = fKY + shinL * Math.sin(fSAng);
+
+  // Back (trailing) leg — extends behind and down
+  var bTAng = Math.PI / 2 + stride * 0.72;
+  var bKX   = cx        + thighL * Math.cos(bTAng);
+  var bKY   = hipY      + thighL * Math.sin(bTAng);
+  var bSAng = Math.PI / 2 + stride * 0.40;
+  var bAX   = bKX + shinL * Math.cos(bSAng);
+  var bAY   = bKY + shinL * Math.sin(bSAng);
+
+  // Front arm (opposite to front leg) — upper arm forward, forearm UP (sprint position)
+  var fUAAng = Math.PI / 2 - stride * 0.88;
+  var fElX   = lShlX + uArmL * Math.cos(fUAAng);
+  var fElY   = shlY  + uArmL * Math.sin(fUAAng);
+  var fFAAng = Math.PI / 2 - stride * 2.30;
+  var fHX    = fElX  + fArmL * Math.cos(fFAAng);
+  var fHY    = fElY  + fArmL * Math.sin(fFAAng);
+
+  // Back arm — swings backward, fist drops
+  var bUAAng = Math.PI / 2 + stride * 0.78;
+  var bElX   = rShlX + uArmL * Math.cos(bUAAng);
+  var bElY   = shlY  + uArmL * Math.sin(bUAAng);
+  var bFAAng = Math.PI / 2 + stride * 1.25;
+  var bHX    = bElX  + fArmL * Math.cos(bFAAng);
+  var bHY    = bElY  + fArmL * Math.sin(bFAAng);
+
+  // ── HELPERS ──────────────────────────────────────────────
+  function limb(x1, y1, x2, y2, w, col) {
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.lineWidth = w * 2; ctx.lineCap = 'round';
+    ctx.strokeStyle = col; ctx.stroke();
+  }
+  function dot(x, y, r, col) {
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = col; ctx.fill();
+  }
+  function rr(x, y, w, h, r, fill) {
     r = Math.min(r, Math.min(w, h) / 2);
     ctx.beginPath();
     ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y,   x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x,   y + h, r);
-    ctx.arcTo(x,     y + h, x,   y,     r);
-    ctx.arcTo(x,     y,     x + w, y,   r);
+    ctx.arcTo(x+w, y,   x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x,   y+h, r);
+    ctx.arcTo(x,   y+h, x,   y,   r);
+    ctx.arcTo(x,   y,   x+w, y,   r);
     ctx.closePath();
-    if (fill)   { ctx.fillStyle   = fill;   ctx.fill(); }
-    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = sw || s; ctx.stroke(); }
+    ctx.fillStyle = fill; ctx.fill();
   }
 
-  // Speed lines
+  // ── SPEED LINES ──────────────────────────────────────────
   if (running) {
-    var lbX = cx - torsoW * 0.8;
-    var lines = [
-      { y: torY + torsoH * 0.18, w: 30 * s, h: 4   * s },
-      { y: torY + torsoH * 0.40, w: 46 * s, h: 4.5 * s },
-      { y: torY + torsoH * 0.62, w: 34 * s, h: 4   * s },
-      { y: hipY + legH   * 0.22, w: 24 * s, h: 3   * s },
-      { y: hipY + legH   * 0.55, w: 32 * s, h: 3.5 * s },
-    ];
     ctx.save();
-    lines.forEach(function(ln) {
+    var lbX = cx - torsoW * 0.9;
+    [[torY + torsoH*0.15, 30*s, 4*s  ],
+     [torY + torsoH*0.38, 46*s, 4.5*s],
+     [torY + torsoH*0.60, 34*s, 4*s  ],
+     [hipY + (thighL+shinL)*0.22, 24*s, 3*s  ],
+     [hipY + (thighL+shinL)*0.55, 32*s, 3.5*s]].forEach(function(ln) {
       ctx.globalAlpha = 0.16;
-      rr(lbX - ln.w, ln.y - ln.h / 2, ln.w, ln.h, ln.h * 0.5, '#90A4AE', null);
+      rr(lbX - ln[1], ln[0] - ln[2]*0.5, ln[1], ln[2], ln[2]*0.5, '#90A4AE');
     });
     ctx.restore();
   }
 
-  // Ground shadow
+  // ── GROUND SHADOW ─────────────────────────────────────────
   ctx.save(); ctx.globalAlpha = 0.10;
-  ctx.beginPath(); ctx.ellipse(cx, cy + 2 * s, 22 * s, 4 * s, 0, 0, Math.PI * 2);
+  ctx.beginPath(); ctx.ellipse(cx, cy + 2*s, 20*s, 4*s, 0, 0, Math.PI*2);
   ctx.fillStyle = '#000'; ctx.fill();
   ctx.restore();
 
-  // Back leg + shoe (dimmed for depth)
-  ctx.save(); ctx.globalAlpha = 0.68;
-  rr(bLX, hipY, legW, legH - legLift * 0.4, 5*s, darken(pants,22), null);
-  rr(bLX + s, hipY + (legH - legLift*0.4)*0.74, legW - 2*s, sockH, 3*s, darken(sockCol,10), null);
-  rr(bLX - s, shY, shW, shH, 4*s, darken(shoeCol,25), null);
+  // ── BACK LEG ─────────────────────────────────────────────
+  ctx.save(); ctx.globalAlpha = 0.60;
+  var dkPants = darken(pants, 22);
+  limb(cx, hipY, bKX, bKY, legW, dkPants);
+  dot(bKX, bKY, legW, dkPants);
+  limb(bKX, bKY, bAX, bAY, legW, dkPants);
+  // Back sock (drawn before shoe so shoe overlaps)
+  limb(bAX, bAY - sockH, bAX, bAY + 1*s, legW * 0.85, darken(sockCol, 12));
+  // Back shoe
+  rr(bAX - shW*0.30, bAY - shH*0.35, shW, shH, 4*s, darken(shoeCol, 24));
   ctx.restore();
 
-  // Torso
-  rr(cx - torsoW / 2, torY, torsoW, torsoH, 7*s, c.body, null);
-  ctx.save(); ctx.globalAlpha = 0.20;
-  rr(cx + torsoW * 0.28, torY + torsoH * 0.14, torsoW * 0.18, torsoH * 0.72, 3*s, '#fff', null);
+  // ── BACK ARM ─────────────────────────────────────────────
+  ctx.save(); ctx.globalAlpha = 0.66;
+  var dkArm = darken(c.body, 18);
+  limb(rShlX, shlY, bElX, bElY, armW, dkArm);
+  dot(bElX, bElY, armW, dkArm);
+  limb(bElX, bElY, bHX, bHY, armW, dkArm);
+  dot(bHX, bHY, armW * 0.95, darken(skin, 16));
   ctx.restore();
+
+  // ── TORSO (jersey with gradient, matching reference) ──────
+  var tg = ctx.createLinearGradient(cx - torsoW*0.5, torY, cx + torsoW*0.5, torY + torsoH);
+  tg.addColorStop(0,   lighten(c.body, 30));
+  tg.addColorStop(0.45, c.body);
+  tg.addColorStop(1,   darken(c.body, 20));
+  rr(cx - torsoW*0.5, torY, torsoW, torsoH, 7*s, tg);
+
+  // Shorts waistband (spans transition between jersey and pants)
+  rr(cx - torsoW*0.44, hipY - 5*s, torsoW * 0.88, 11*s, 4*s, pants);
+
+  // V-collar
   ctx.beginPath();
-  ctx.moveTo(cx - torsoW * 0.16, torY + 2*s);
-  ctx.lineTo(cx, torY + torsoH * 0.24);
-  ctx.lineTo(cx + torsoW * 0.16, torY + 2*s);
-  ctx.strokeStyle = darken(c.body, 32); ctx.lineWidth = 2.8*s; ctx.stroke();
-  var nums = { kofi:'1', ama:'2', kwame:'3', abena:'4' };
-  ctx.font = '900 ' + Math.round(11*s) + 'px sans-serif';
+  ctx.moveTo(cx - torsoW*0.16, torY + 2*s);
+  ctx.lineTo(cx,               torY + torsoH*0.22);
+  ctx.lineTo(cx + torsoW*0.16, torY + 2*s);
+  ctx.strokeStyle = darken(c.body, 28); ctx.lineWidth = 2.4*s; ctx.stroke();
+
+  // Jersey number
+  var NUMS = { kofi:'1', ama:'2', kwame:'3', abena:'4' };
+  ctx.font = '900 ' + Math.round(10*s) + 'px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = darken(c.body, 42);
-  ctx.fillText(nums[c.id] || '★', cx + s, torY + torsoH * 0.56 + s);
+  ctx.fillText(NUMS[c.id] || '★', cx + s,  torY + torsoH*0.52 + s);
   ctx.fillStyle = c.accent;
-  ctx.fillText(nums[c.id] || '★', cx, torY + torsoH * 0.56);
+  ctx.fillText(NUMS[c.id] || '★', cx,       torY + torsoH*0.52);
 
-  // Back arm (dimmed)
-  ctx.save(); ctx.globalAlpha = 0.75;
-  rr(cx - torsoW/2 - armW + 1.5*s, bAY, armW, armH, 4*s, darken(c.body,14), null);
-  ctx.beginPath(); ctx.arc(cx - torsoW/2 - armW/2 + 1.5*s, bAY + armH + 4*s, 4*s, 0, Math.PI*2);
-  ctx.fillStyle = darken(skin,8); ctx.fill();
-  ctx.restore();
-
-  // Front leg + shoe
-  rr(fLX, hipY - legLift, legW, legH + legLift, 5*s, pants, null);
-  rr(fLX + s, hipY + legH*0.74, legW - 2*s, sockH, 3*s, sockCol, null);
-  rr(fLX - 2*s, shY, shW, shH, 4*s, shoeCol, null);
+  // ── FRONT LEG ────────────────────────────────────────────
+  limb(cx, hipY, fKX, fKY, legW, pants);
+  dot(fKX, fKY, legW, pants);
+  limb(fKX, fKY, fAX, fAY, legW, pants);
+  // Front sock (drawn before shoe)
+  limb(fAX, fAY - sockH, fAX, fAY + 1*s, legW * 0.85, sockCol);
+  // Front shoe
+  rr(fAX - shW*0.30, fAY - shH*0.35, shW, shH, 4*s, shoeCol);
+  // Shoe shine
   ctx.save(); ctx.globalAlpha = 0.28;
-  rr(fLX, shY + s, shW * 0.36, shH * 0.40, 2*s, '#fff', null);
+  rr(fAX - shW*0.30 + 2*s, fAY - shH*0.35 + s, shW*0.36, shH*0.40, 2*s, '#fff');
   ctx.restore();
 
-  // Neck
-  rr(cx - 4*s, nkY, 8*s, neckH + 3*s, 3*s, skin, null);
+  // ── NECK ─────────────────────────────────────────────────
+  rr(cx - 3.5*s, nkY, 7*s, neckH + 3*s, 3*s, skin);
 
-  // Head
+  // ── HEAD ─────────────────────────────────────────────────
   ctx.beginPath(); ctx.arc(cx, hdY, headR, 0, Math.PI*2);
   ctx.fillStyle = skin; ctx.fill();
-  ctx.save(); ctx.globalAlpha = 0.15;
-  ctx.beginPath(); ctx.arc(cx - headR*0.25, hdY - headR*0.20, headR*0.52, 0, Math.PI*2);
+  // Soft cheek/highlight (flat design style)
+  ctx.save(); ctx.globalAlpha = 0.13;
+  ctx.beginPath(); ctx.arc(cx - headR*0.22, hdY - headR*0.16, headR*0.52, 0, Math.PI*2);
   ctx.fillStyle = '#fff'; ctx.fill();
   ctx.restore();
 
-  // Front arm
-  rr(cx + torsoW/2 - 1.5*s, fAY, armW, armH, 4*s, darken(c.body,14), null);
-  ctx.beginPath(); ctx.arc(cx + torsoW/2 + armW/2 - 1.5*s, fAY + armH + 4*s, 4*s, 0, Math.PI*2);
-  ctx.fillStyle = skin; ctx.fill();
+  // ── FRONT ARM ────────────────────────────────────────────
+  var ftArm = darken(c.body, 8);
+  limb(lShlX, shlY, fElX, fElY, armW, ftArm);
+  dot(fElX, fElY, armW, ftArm);
+  limb(fElX, fElY, fHX, fHY, armW, ftArm);
+  dot(fHX, fHY, armW * 0.95, skin);  // fist
 
-  // Eyes
+  // ── FACE ─────────────────────────────────────────────────
   var eyeY = hdY - headR * 0.08;
-  var eyeX = headR * 0.30;
-  var eyeR = headR * 0.155;
+  var eyeR = headR * 0.148;
   [-1, 1].forEach(function(side) {
-    var ex = cx + side * eyeX;
+    var ex = cx + side * headR * 0.28;
     ctx.beginPath(); ctx.arc(ex, eyeY, eyeR, 0, Math.PI*2);
     ctx.fillStyle = '#1A1A2E'; ctx.fill();
-    ctx.beginPath(); ctx.arc(ex - eyeR*0.38, eyeY - eyeR*0.38, eyeR*0.38, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(255,255,255,0.88)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(ex - eyeR*0.38, eyeY - eyeR*0.38, eyeR*0.35, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.90)'; ctx.fill();
   });
-
-  // Mouth
-  var mY = hdY + headR * 0.35;
   ctx.beginPath();
-  ctx.arc(cx, mY - headR*0.06, running ? headR*0.20 : headR*0.22, 0.12, Math.PI - 0.12);
-  ctx.strokeStyle = darken(skin, 42); ctx.lineWidth = 2*s; ctx.stroke();
+  ctx.arc(cx, hdY + headR*0.34, headR*0.19, 0.12, Math.PI - 0.12);
+  ctx.strokeStyle = darken(skin, 38); ctx.lineWidth = 1.8*s; ctx.stroke();
 
-  // Hair
+  // ── HAIR ─────────────────────────────────────────────────
   _drawCharacterHair(ctx, cx, hdY, headR, s, Math.max(2, 3*s), c);
 
   ctx.restore();
@@ -433,59 +493,61 @@ function _drawCharacterHair(ctx, cx, headY, headR, scale, lw, c) {
 
   switch (c.hair) {
 
-    // ── KOFI: Short dark hair with a swoosh ──────────────────
+    // ── KOFI: Short dark hair, small side swoosh (like reference) ──
     case 'spiky': {
       var hc = '#1A0A00';
+      // Main cap — sits on top half of head
       ctx.beginPath();
-      ctx.arc(cx, headY - headR*0.08, headR*0.96, Math.PI*1.04, 0.10, false);
+      ctx.arc(cx, headY - headR*0.06, headR*0.96, Math.PI*1.03, 0.08, false);
       ctx.fillStyle = hc; ctx.fill();
-      // Swoosh tuft
+      // Side swoosh tuft (goes left-up then sweeps right)
       ctx.beginPath();
-      ctx.moveTo(cx - headR*0.18, headY - headR*0.85);
+      ctx.moveTo(cx - headR*0.20, headY - headR*0.82);
       ctx.bezierCurveTo(
-        cx - headR*0.60, headY - headR*1.20,
-        cx - headR*0.40, headY - headR*1.48,
-        cx + headR*0.05, headY - headR*1.18);
+        cx - headR*0.65, headY - headR*1.18,
+        cx - headR*0.42, headY - headR*1.52,
+        cx + headR*0.08, headY - headR*1.22);
       ctx.bezierCurveTo(
-        cx + headR*0.28, headY - headR*0.96,
-        cx + headR*0.12, headY - headR*0.72,
-        cx, headY - headR*0.72);
+        cx + headR*0.30, headY - headR*0.98,
+        cx + headR*0.14, headY - headR*0.74,
+        cx,              headY - headR*0.72);
       ctx.fillStyle = hc; ctx.fill();
       // Shine streak
-      ctx.save(); ctx.globalAlpha = 0.22;
+      ctx.save(); ctx.globalAlpha = 0.20;
       ctx.beginPath();
-      ctx.arc(cx - headR*0.22, headY - headR*0.55, headR*0.28, Math.PI*1.1, Math.PI*1.72, false);
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5*s; ctx.stroke();
+      ctx.arc(cx - headR*0.24, headY - headR*0.54, headR*0.28, Math.PI*1.12, Math.PI*1.72, false);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.2*s; ctx.stroke();
       ctx.restore();
       break;
     }
 
-    // ── AMA: High ponytail bun with accent bow ────────────────
+    // ── AMA: High ponytail bun with coloured bow ────────────────
     case 'ponytail': {
-      var hc  = '#1A1A2E';
+      var hc = '#1A1A2E';
+      // Main cap
       ctx.beginPath();
       ctx.arc(cx, headY - headR*0.10, headR*0.98, Math.PI*1.02, 0.06, false);
       ctx.fillStyle = hc; ctx.fill();
-      // Bun
-      ctx.beginPath(); ctx.arc(cx + headR*0.50, headY - headR*0.95, headR*0.36, 0, Math.PI*2);
+      // Bun ball
+      ctx.beginPath(); ctx.arc(cx + headR*0.52, headY - headR*0.96, headR*0.36, 0, Math.PI*2);
       ctx.fillStyle = hc; ctx.fill();
       // Bun shine
-      ctx.save(); ctx.globalAlpha = 0.25;
-      ctx.beginPath(); ctx.arc(cx + headR*0.38, headY - headR*1.06, headR*0.16, 0, Math.PI*2);
+      ctx.save(); ctx.globalAlpha = 0.24;
+      ctx.beginPath(); ctx.arc(cx + headR*0.40, headY - headR*1.06, headR*0.15, 0, Math.PI*2);
       ctx.fillStyle = '#fff'; ctx.fill();
       ctx.restore();
       // Hair tie
-      ctx.beginPath(); ctx.arc(cx + headR*0.28, headY - headR*0.70, headR*0.12, 0, Math.PI*2);
+      ctx.beginPath(); ctx.arc(cx + headR*0.30, headY - headR*0.70, headR*0.12, 0, Math.PI*2);
       ctx.fillStyle = c.accent; ctx.fill();
       // Bow wings
-      var bwX = cx + headR*0.50, bwY = headY - headR*1.18;
+      var bwX = cx + headR*0.52, bwY = headY - headR*1.20;
       [-1, 1].forEach(function(side) {
         ctx.beginPath();
         ctx.moveTo(bwX, bwY);
-        ctx.bezierCurveTo(bwX + side*headR*0.42, bwY - headR*0.30,
-                          bwX + side*headR*0.38, bwY + headR*0.22, bwX, bwY);
+        ctx.bezierCurveTo(bwX + side*headR*0.44, bwY - headR*0.30,
+                          bwX + side*headR*0.40, bwY + headR*0.24, bwX, bwY);
         ctx.fillStyle = c.accent; ctx.fill();
-        ctx.save(); ctx.globalAlpha = 0.28;
+        ctx.save(); ctx.globalAlpha = 0.30;
         ctx.beginPath();
         ctx.moveTo(bwX, bwY);
         ctx.bezierCurveTo(bwX + side*headR*0.34, bwY - headR*0.20,
@@ -498,61 +560,68 @@ function _drawCharacterHair(ctx, cx, headY, headR, scale, lw, c) {
       break;
     }
 
-    // ── KWAME: Clean round afro ────────────────────────────────
+    // ── KWAME: Clean round afro ─────────────────────────────────
     case 'afro': {
       var hc  = '#1A0A00';
       var afR = headR * 1.38;
-      var aCY = headY - headR * 0.20;
+      var aCY = headY - headR * 0.22;
+      // Drop shadow
       ctx.save(); ctx.globalAlpha = 0.18;
       ctx.beginPath(); ctx.arc(cx + 2*s, aCY + 2*s, afR*0.88, 0, Math.PI*2);
       ctx.fillStyle = '#000'; ctx.fill();
       ctx.restore();
+      // Main afro
       ctx.beginPath(); ctx.arc(cx, aCY, afR*0.88, 0, Math.PI*2);
       ctx.fillStyle = hc; ctx.fill();
+      // Shine zone
       ctx.save(); ctx.globalAlpha = 0.20;
       ctx.beginPath(); ctx.arc(cx - afR*0.28, aCY - afR*0.28, afR*0.42, 0, Math.PI*2);
       ctx.fillStyle = '#fff'; ctx.fill();
       ctx.restore();
       // Gold pick accessory
-      var pkX = cx + afR*0.60, pkY = aCY - afR*0.38;
-      ctx.lineWidth = 2.5*s; ctx.strokeStyle = '#FFD700';
+      var pkX = cx + afR*0.60, pkY = aCY - afR*0.36;
+      ctx.lineWidth = 2.5*s; ctx.strokeStyle = '#FFD700'; ctx.lineCap = 'round';
       for (var i = -1; i <= 1; i++) {
         ctx.beginPath();
-        ctx.moveTo(pkX + i*3*s, pkY - afR*0.38);
-        ctx.lineTo(pkX + i*3*s, pkY + afR*0.22);
+        ctx.moveTo(pkX + i*3.5*s, pkY - afR*0.38);
+        ctx.lineTo(pkX + i*3.5*s, pkY + afR*0.20);
         ctx.stroke();
       }
       break;
     }
 
-    // ── ABENA: Royal updo + golden crown ──────────────────────
+    // ── ABENA: Royal updo + golden crown ───────────────────────
     case 'crown_small': {
       var hc = '#2E0060';
+      // Hair base
       ctx.beginPath();
       ctx.arc(cx, headY - headR*0.08, headR, Math.PI*1.02, 0.06, false);
       ctx.fillStyle = hc; ctx.fill();
       // Updo bun
       ctx.beginPath(); ctx.arc(cx, headY - headR*1.08, headR*0.46, 0, Math.PI*2);
       ctx.fillStyle = hc; ctx.fill();
+      // Bun shine
       ctx.save(); ctx.globalAlpha = 0.28;
       ctx.beginPath(); ctx.arc(cx - headR*0.14, headY - headR*1.18, headR*0.20, 0, Math.PI*2);
       ctx.fillStyle = '#fff'; ctx.fill();
       ctx.restore();
-      // Crown
+      // Crown shape
       var crW = headR*0.84, crH = headR*0.52;
-      var crTop = headY - headR*1.48, crBot = crTop + crH;
+      var crTop = headY - headR*1.50, crBot = crTop + crH;
       var crG = ctx.createLinearGradient(cx - crW, crTop, cx + crW, crBot);
-      crG.addColorStop(0, '#FFEE88'); crG.addColorStop(0.5, '#FFD700'); crG.addColorStop(1, '#C8960C');
+      crG.addColorStop(0,   '#FFEE88');
+      crG.addColorStop(0.5, '#FFD700');
+      crG.addColorStop(1,   '#C8960C');
       ctx.beginPath();
-      ctx.moveTo(cx - crW,       crBot);
-      ctx.lineTo(cx - crW,       crBot - crH*0.46);
-      ctx.lineTo(cx - crW*0.58,  crTop + crH*0.12);
-      ctx.lineTo(cx - crW*0.22,  crBot - crH*0.30);
-      ctx.lineTo(cx,             crTop);
-      ctx.lineTo(cx + crW*0.22,  crBot - crH*0.30);
-      ctx.lineTo(cx + crW*0.58,  crTop + crH*0.12);
-      ctx.lineTo(cx + crW,       crBot - crH*0.46);
-      ctx.lineTo(cx + crW,       crBot);
+      ctx.moveTo(cx - crW,      crBot);
+      ctx.lineTo(cx - crW,      crBot - crH*0.46);
+      ctx.lineTo(cx - crW*0.58, crTop + crH*0.12);
+      ctx.lineTo(cx - crW*0.22, crBot - crH*0.30);
+      ctx.lineTo(cx,            crTop);
+      ctx.lineTo(cx + crW*0.22, crBot - crH*0.30);
+      ctx.lineTo(cx + crW*0.58, crTop + crH*0.12);
+      ctx.lineTo(cx + crW,      crBot - crH*0.46);
+      ctx.lineTo(cx + crW,      crBot);
       ctx.closePath();
       ctx.fillStyle = crG; ctx.fill();
       ctx.strokeStyle = '#8B6914'; ctx.lineWidth = 1.4*s; ctx.stroke();
@@ -561,7 +630,7 @@ function _drawCharacterHair(ctx, cx, headY, headR, scale, lw, c) {
        { x:cx - crW*0.30, y:crBot-crH*0.24, gc:'#44DDFF', r:3.2 },
        { x:cx + crW*0.30, y:crBot-crH*0.24, gc:'#88FFCC', r:3.2 }].forEach(function(gm) {
         var gg = ctx.createRadialGradient(gm.x-gm.r*s*0.3, gm.y-gm.r*s*0.3, 0, gm.x, gm.y, gm.r*s);
-        gg.addColorStop(0, lighten(gm.gc,50)); gg.addColorStop(1, gm.gc);
+        gg.addColorStop(0, lighten(gm.gc, 50)); gg.addColorStop(1, gm.gc);
         ctx.beginPath(); ctx.arc(gm.x, gm.y, gm.r*s, 0, Math.PI*2);
         ctx.fillStyle = gg; ctx.fill();
         ctx.beginPath(); ctx.arc(gm.x-gm.r*s*0.30, gm.y-gm.r*s*0.30, gm.r*s*0.35, 0, Math.PI*2);
