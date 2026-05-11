@@ -1232,26 +1232,53 @@ function renderVoiceList() {
     const voice = matchVoice(slot.langs, slot.hints);
     if (voice) used.add(voice.name);
 
-    const isSelected = voice && Audio.preferredVoice?.name === voice.name;
+    const isSelected = !!(voice && Audio.preferredVoice?.name === voice.name);
     const available  = !!voice;
-    const item = document.createElement('label');
-    item.style.cssText = `display:flex;align-items:center;gap:12px;padding:11px 14px;
+
+    const label = document.createElement('label');
+    label.style.cssText = `display:flex;align-items:center;gap:12px;padding:11px 14px;
       border-radius:12px;border:1.5px solid ${isSelected ? '#F1C40F' : 'rgba(255,255,255,0.08)'};
       background:${isSelected ? 'rgba(241,196,15,0.07)' : 'rgba(255,255,255,0.03)'};
       cursor:${available ? 'pointer' : 'default'};margin-bottom:8px;
       opacity:${available ? '1' : '0.32'};`;
-    const safeName = voice ? voice.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'") : '';
-    item.innerHTML = `
-      <input type="radio" name="voice-pick" value="${safeName}" ${isSelected ? 'checked' : ''} ${!available ? 'disabled' : ''}
-        style="accent-color:#F1C40F;width:16px;height:16px;flex-shrink:0;"
-        onchange="Audio.setVoice('${safeName}');renderVoiceList();">
-      <div style="flex:1;min-width:0;">
-        <div style="font-weight:700;font-size:14px;">${slot.flag}&nbsp;${slot.label}</div>
-        <div style="font-size:11px;color:#666;">${available ? voice.name + (voice.localService ? ' · Local' : ' · Network') : 'Not on this device'}</div>
-      </div>
-      ${isSelected ? '<span style="color:#F1C40F;font-size:18px;">✓</span>' : ''}
-    `;
-    container.appendChild(item);
+
+    const input = document.createElement('input');
+    input.type    = 'radio';
+    input.name    = 'voice-pick';
+    input.checked = isSelected;
+    input.disabled = !available;
+    input.style.cssText = 'accent-color:#F1C40F;width:16px;height:16px;flex-shrink:0;';
+    if (voice) {
+      const voiceName = voice.name;
+      input.addEventListener('change', function() {
+        Audio.setVoice(voiceName);
+        renderVoiceList();
+      });
+    }
+
+    const info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    const nameDiv = document.createElement('div');
+    nameDiv.style.cssText = 'font-weight:700;font-size:14px;';
+    nameDiv.textContent = slot.flag + ' ' + slot.label;
+    const subDiv = document.createElement('div');
+    subDiv.style.cssText = 'font-size:11px;color:#666;';
+    subDiv.textContent = available
+      ? voice.name + (voice.localService ? ' · Local' : ' · Network')
+      : 'Not on this device';
+    info.appendChild(nameDiv);
+    info.appendChild(subDiv);
+
+    label.appendChild(input);
+    label.appendChild(info);
+    if (isSelected) {
+      const check = document.createElement('span');
+      check.style.cssText = 'color:#F1C40F;font-size:18px;';
+      check.textContent = '✓';
+      label.appendChild(check);
+    }
+
+    container.appendChild(label);
   });
 }
 
