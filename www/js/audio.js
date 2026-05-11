@@ -44,6 +44,19 @@ const VOICE_SCRIPTS = {
   ],
 };
 
+const CURATED_VOICES = [
+  { id:'nigerian',      label:'Nigerian English',  flag:'🇳🇬', langs:['en-NG'],        hints:[] },
+  { id:'ghanaian',      label:'Ghanaian English',  flag:'🇬🇭', langs:['en-GH'],        hints:[] },
+  { id:'uk-female',     label:'British Female',    flag:'🇬🇧', langs:['en-GB'],        hints:['female','kate','serena','hazel','susan'] },
+  { id:'uk-male',       label:'British Male',      flag:'🇬🇧', langs:['en-GB'],        hints:['male','daniel','oliver','arthur'] },
+  { id:'us-female',     label:'American Female',   flag:'🇺🇸', langs:['en-US'],        hints:['female','samantha','zira','ava','aria'] },
+  { id:'us-male',       label:'American Male',     flag:'🇺🇸', langs:['en-US'],        hints:['male','alex','david','tom','guy'] },
+  { id:'australian',    label:'Australian English', flag:'🇦🇺', langs:['en-AU'],       hints:['karen','catherine','lee'] },
+  { id:'indian',        label:'Indian English',    flag:'🇮🇳', langs:['en-IN'],        hints:['ravi','lekha','veena','neel'] },
+  { id:'south-african', label:'South African',     flag:'🇿🇦', langs:['en-ZA'],        hints:['tessa'] },
+  { id:'irish',         label:'Irish English',     flag:'🇮🇪', langs:['en-IE'],        hints:['moira','fiona'] },
+];
+
 class AudioManager {
   constructor() {
     this.synth   = window.speechSynthesis || null;
@@ -62,8 +75,9 @@ class AudioManager {
   loadVoices() {
     if (!this.synth) return;
     this.voices = this.synth.getVoices();
-    // Default priority: well-known smooth voices first
     const auto =
+      this.voices.find(v => v.lang === 'en-NG') ||
+      this.voices.find(v => v.lang === 'en-GH') ||
       this.voices.find(v => v.name === 'Google UK English Female') ||
       this.voices.find(v => v.name === 'Google US English Female') ||
       this.voices.find(v => v.name === 'Samantha') ||

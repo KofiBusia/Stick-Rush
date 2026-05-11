@@ -1192,29 +1192,62 @@ function renderOrientationButtons() {
 }
 
 function renderVoiceList() {
-  const voices = (Audio.voices || []).filter(v => v.lang.startsWith('en'));
   const container = document.getElementById('settings-voice-list');
   if (!container) return;
   container.innerHTML = '';
-  if (!voices.length) {
-    container.innerHTML = '<p style="color:#888;font-size:13px;padding:8px 0;">No voices found — try Chrome or Edge.</p>';
+
+  const allVoices = (Audio.voices || []).filter(v => v.lang.startsWith('en'));
+  if (!allVoices.length) {
+    container.innerHTML = '<p style="color:#888;font-size:13px;padding:8px 0;">Loading voices…</p>';
+    setTimeout(renderVoiceList, 700);
     return;
   }
-  voices.forEach(v => {
-    const isSelected = Audio.preferredVoice?.name === v.name;
+
+  const used = new Set();
+  function matchVoice(langs, hints) {
+    for (const lang of langs) {
+      for (const hint of hints) {
+        const v = allVoices.find(v => !used.has(v.name) && v.lang === lang && v.name.toLowerCase().includes(hint));
+        if (v) return v;
+      }
+    }
+    for (const lang of langs) {
+      const v = allVoices.find(v => !used.has(v.name) && v.lang === lang && v.localService);
+      if (v) return v;
+    }
+    for (const lang of langs) {
+      const v = allVoices.find(v => !used.has(v.name) && v.lang === lang);
+      if (v) return v;
+    }
+    const generic = new Set(['female','male']);
+    for (const hint of hints) {
+      if (generic.has(hint)) continue;
+      const v = allVoices.find(v => !used.has(v.name) && v.name.toLowerCase().includes(hint));
+      if (v) return v;
+    }
+    return null;
+  }
+
+  CURATED_VOICES.forEach(slot => {
+    const voice = matchVoice(slot.langs, slot.hints);
+    if (voice) used.add(voice.name);
+
+    const isSelected = voice && Audio.preferredVoice?.name === voice.name;
+    const available  = !!voice;
     const item = document.createElement('label');
     item.style.cssText = `display:flex;align-items:center;gap:12px;padding:11px 14px;
       border-radius:12px;border:1.5px solid ${isSelected ? '#F1C40F' : 'rgba(255,255,255,0.08)'};
       background:${isSelected ? 'rgba(241,196,15,0.07)' : 'rgba(255,255,255,0.03)'};
-      cursor:pointer;margin-bottom:8px;transition:all 0.15s;`;
-    const safeName = v.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      cursor:${available ? 'pointer' : 'default'};margin-bottom:8px;
+      opacity:${available ? '1' : '0.32'};`;
+    const safeName = voice ? voice.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'") : '';
     item.innerHTML = `
-      <input type="radio" name="voice-pick" value="${v.name}" ${isSelected ? 'checked' : ''}
+      <input type="radio" name="voice-pick" value="${safeName}" ${isSelected ? 'checked' : ''} ${!available ? 'disabled' : ''}
         style="accent-color:#F1C40F;width:16px;height:16px;flex-shrink:0;"
         onchange="Audio.setVoice('${safeName}');renderVoiceList();">
       <div style="flex:1;min-width:0;">
-        <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${v.name}</div>
-        <div style="font-size:11px;color:#666;">${v.lang}${v.localService ? ' · Local' : ' · Network'}</div>
+        <div style="font-weight:700;font-size:14px;">${slot.flag}&nbsp;${slot.label}</div>
+        <div style="font-size:11px;color:#666;">${available ? voice.name + (voice.localService ? ' · Local' : ' · Network') : 'Not on this device'}</div>
       </div>
       ${isSelected ? '<span style="color:#F1C40F;font-size:18px;">✓</span>' : ''}
     `;
